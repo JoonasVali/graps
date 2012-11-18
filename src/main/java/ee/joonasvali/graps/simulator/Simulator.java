@@ -11,14 +11,16 @@ import javax.swing.SwingUtilities;
 import ee.joonasvali.graps.generator.Generator;
 import ee.joonasvali.graps.graph.Graph;
 import ee.joonasvali.graps.layout.Layout;
-import ee.joonasvali.graps.layout.OrthogonalLayout;
+import ee.joonasvali.graps.layout.pushlayout.ForeignNodeProvider;
+import ee.joonasvali.graps.layout.pushlayout.NodeProvider;
+import ee.joonasvali.graps.layout.pushlayout.PushLayout;
 
 public class Simulator {	
 	private JFrame frame;	
 	private Dimension size = new Dimension(700, 700);
 	
-	private static int NODES = 5;
-	private static int PORTS = 15;
+	private static int NODES = 10;
+	private static int PORTS = 20;
 	private static int CANVAS_SIZE = 600;
 	
 	public Simulator(){
@@ -37,13 +39,17 @@ public class Simulator {
 	        Generator gen = new Generator(NODES, PORTS, CANVAS_SIZE);
 	        Renderer renderer = new SimpleRenderer();	        
 	        Graph graph = gen.generate();	        
+	        NodeProvider provider = new ForeignNodeProvider(graph);
+	        Layout layout = new PushLayout(provider);
+	        System.out.println("layout");
+	        graph.assign(layout, 150);
+	        System.out.println("g");
 	        SimulatorCanvas canvas = new SimulatorCanvas(graph, renderer, new Dimension(CANVAS_SIZE, CANVAS_SIZE));
 	        MouseListener listener = getMouseListener(renderer, canvas);
 	        canvas.addMouseListener(listener);
 	        renderer.addListener(getRepaintListener(canvas));
 	        sim.frame.add(canvas);        
-	        sim.frame.setVisible(true);	        
-	        Layout layout = new OrthogonalLayout(graph);
+	        sim.frame.setVisible(true);        
 	      }
 
 				private ChangeListener getRepaintListener(final Canvas canvas) {	        
