@@ -42,7 +42,7 @@ public class Simulator {
 	        Graph graph = gen.generate();	        
 //	        NodeProvider provider = new ForeignNodeProvider(graph);
 	        Layout layout = new ForceLayout(graph);	        
-	        graph.assign(layout, 150);	        
+	        graph.assign(layout, 1);	        
 	        SimulatorCanvas canvas = new SimulatorCanvas(graph, renderer, new Dimension(CANVAS_SIZE, CANVAS_SIZE));
 	        MouseListener listener = getMouseListener(renderer, canvas);
 	        canvas.addMouseListener(listener);

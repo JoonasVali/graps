@@ -9,7 +9,7 @@ import ee.joonasvali.graps.layout.Layout;
 
 public class ForceLayout implements Layout{	
 	private LinkedList<PhysicalNode> nodes = new LinkedList<PhysicalNode>();
-	private final static double STABLE = 0.5d, DAMPING = 0.2, TIMESTEP = 1, STRING_EQUILIBRIUM = 0.5, STRING_STRENGTH = 1;
+	private final static double STABLE = 0.1d, DAMPING = 0.85, STRING_STRENGTH = 0.06;
 	
 	public ForceLayout(Graph graph){		
 		for(Node n : graph.getNodes()){
@@ -18,11 +18,13 @@ public class ForceLayout implements Layout{
 		place();
 	}
 	
-	public void place(){
+	public void place(){		
 		Force kinetic;
 		do{
 			kinetic = sumKinetic();
 			for(PhysicalNode node: nodes){
+				if(node.getForeignNodes().size() == 0)
+					continue;
 				Force netForce = new Force();
 				for(PhysicalNode other: nodes){
 					if(!node.equals(other)){
@@ -32,43 +34,42 @@ public class ForceLayout implements Layout{
 				
 				for(Node other : node.getForeignNodes()){
 					netForce.add(hookeAttraction(node, other));
-				}
-				node.getVelocity().x += (TIMESTEP * netForce.x);
-				node.getVelocity().x *= DAMPING;		
-				node.getVelocity().y += (TIMESTEP * netForce.y);
-				node.getVelocity().y *= DAMPING;
+				}							
+				
+				node.getVelocity().x = (node.getVelocity().x +(netForce.x)) * DAMPING;
+				node.getVelocity().y = (node.getVelocity().y +(netForce.y)) * DAMPING;				
+			}	
+			for(PhysicalNode node: nodes){
 				node.getNode().setLocation(new Point(
-					(int)(node.getNode().getLocation().x + TIMESTEP * node.getVelocity().x), 
-					(int)(node.getNode().getLocation().y + TIMESTEP * node.getVelocity().y)	
+						(int)(node.getNode().getLocation().x + node.getVelocity().x), 
+						(int)(node.getNode().getLocation().y + node.getVelocity().y)	
 				));
+							
 				kinetic.add(
-						new Force(node.getMass() * Math.pow(node.getVelocity().x, 2),
-						node.getMass() * Math.pow(node.getVelocity().y, 2))
+					new Force(
+						node.getMass() * Math.pow(node.getVelocity().x, 2),
+						node.getMass() * Math.pow(node.getVelocity().y, 2)
+					)
 				);
-			}		
-			try {
-	      Thread.sleep(1000);
-      }
-      catch (InterruptedException e) {
-	      // TODO Auto-generated catch block
-	      e.printStackTrace();
-      }
-			System.out.println(kinetic.getAbsolute());
-		} while(kinetic.getAbsolute() > STABLE);		
+			}			
+			
+		} while(kinetic.getAbsolute() > STABLE);
+		System.out.println(nodes.get(0).getNode().getLocation());
 	}
 	
 	private Force hookeAttraction(PhysicalNode node, Node other) {		
-		double xdiff = (node.getNode().getLocation().x - other.getLocation().x) - STRING_EQUILIBRIUM;
-		double ydiff = (node.getNode().getLocation().y - other.getLocation().y) - STRING_EQUILIBRIUM;	  
-	  return new Force(-xdiff*STRING_STRENGTH, -ydiff*STRING_STRENGTH);
+		double xdiff = (node.getNode().getLocation().x - other.getLocation().x);
+		double ydiff = (node.getNode().getLocation().y - other.getLocation().y);	  
+	  return new Force(xdiff*STRING_STRENGTH, ydiff*STRING_STRENGTH);
   }
 
 	private Force coulombRepulsion(PhysicalNode node, PhysicalNode other) {
 		// Simplified
-		double k = 0.002;
+		double k = 200;		
 		double xdiff = node.getNode().getLocation().x - other.getNode().getLocation().x;
 		double ydiff = node.getNode().getLocation().y - other.getNode().getLocation().y;
-		return new Force(k / xdiff, k/ydiff );
+		double sqrdistance = xdiff*xdiff - ydiff * ydiff;
+		return new Force((k * xdiff / sqrdistance), (k * ydiff / sqrdistance));
   }
 
 	private Force sumKinetic() {

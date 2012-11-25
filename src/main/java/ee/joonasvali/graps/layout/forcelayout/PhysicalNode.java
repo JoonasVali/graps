@@ -28,8 +28,7 @@ public class PhysicalNode {
   }
 	
 	public Collection<Node> getForeignNodes(){
-		Set<Node> set = new HashSet<Node>();
-		set.clear();
+		Set<Node> set = new HashSet<Node>();		
 		for(Port p : node.getPorts()){				
 			if(!p.getPort().getNode().equals(node)){					
 				set.add(p.getPort().getNode());
@@ -39,7 +38,7 @@ public class PhysicalNode {
 	}
 
 	public double getMass() {	 
-	  return 2;
+	  return 1;
   }	
 	
 	public double distance(PhysicalNode other){
