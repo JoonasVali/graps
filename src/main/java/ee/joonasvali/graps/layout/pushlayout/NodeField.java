@@ -56,18 +56,23 @@ public class NodeField<T> {
 	  if(availableDir.size() > 0){	  	
 	  	Direction dir = availableDir.getFirst();  	
 	  	Point newLocation = new Point(location.x + dir.getX(), location.y + dir.getY());
-	  	if(newLocation.x < 0){
+	  	if(newLocation.x < 0 && (expanderCounter++ % 2 == 0 || newLocation.y >= 0)){
 	  		i++;
 	  		newLocation.x++;
+	  		extendX(newLocation.x);	  
+	  		addNextTo(i, j, newItem);
+	  		return;
 	  	}
-	  	if(newLocation.y < 0){
+	  	else if(newLocation.y < 0){
+	  		if(newLocation.x >= 0){ 
+	  			expanderCounter++;
+	  		}
 	  		j++;
 	  		newLocation.y++;
-	  	}
-		  extendX(newLocation.x);
-		  extendY(newLocation.y);
-		  addNextTo(i, j, newItem);
-	  	return;
+	  		extendY(newLocation.y);
+	  		addNextTo(i, j, newItem);
+	  		return;
+	  	}	  	
 	  }
 	  if(expanderCounter++ % 2 == 0){
 	  	extendX(j);	  
@@ -93,7 +98,7 @@ public class NodeField<T> {
 		for(int i = 0; i < field.get(0).size(); i++){
 			for(int j = 0; j < field.size(); j++){
 				Container c = field.get(j).get(i);
-				strb.append(c.getItem() == null ? "•" : "☻");
+				strb.append(c.getItem() == null ? "·" : "0");
 			}
 			strb.append("\n");
 		}		
