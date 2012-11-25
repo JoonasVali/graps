@@ -32,7 +32,7 @@ public class Graph {
 
 	public void assign(Layout layout, int scale) {		
 	  for(Node node: nodes){	  	
-	  	Point position = new Point(layout.getPosition(node));
+	  	Point position = new Point(layout.getPosition(node));	  	
 	  	position.x *= scale;
 	  	position.y *= scale;
 	  	node.setLocation(position);
