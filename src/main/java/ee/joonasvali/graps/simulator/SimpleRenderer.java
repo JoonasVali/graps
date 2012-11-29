@@ -19,19 +19,14 @@ import ee.joonasvali.graps.util.GraphUtil;
 
 public class SimpleRenderer implements Renderer{
 	private static final int PORT_SIZE = 3;	
-	private Map<Clickable, Area> map = new HashMap<Clickable, Area>();	
-	private double scaleX;
-	private double scaleY;  
-  private Clickable selected;
-  private Point maxPosition;  
+	private Map<Clickable, Area> map = new HashMap<Clickable, Area>();
+	
+  private Clickable selected;  
   
   private ColorBlinker blink = new ColorBlinker(200, new Color(0,0,255), new Color(0,255,0), new Color(255,0,0));
   private LinkedList<ChangeListener> listeners = new LinkedList<ChangeListener>();
 	
-	public void draw(Graph graph, Graphics2D g, Dimension size) {
-	  maxPosition = GraphUtil.calculateMaxPosition(graph);
-	  scaleX = size.getWidth() / maxPosition.x;
-	  scaleY = size.getHeight() / maxPosition.y;
+	public void draw(Graph graph, Graphics2D g, Dimension size) {	  
 	  Set<Port> painted = new HashSet<Port>();
 	  for(Node n: graph.getNodes()){
 	  	drawNodes(g, n);
@@ -136,13 +131,11 @@ public class SimpleRenderer implements Renderer{
   }
 	
 	public int scaleX(int orig){
-	  int n = (int)(((double)orig) * scaleX);
-  	return n > 0 ? n: 1;
+	  return orig; /* REIMPLEMENT IF EVER NEEDED */
   }
 	
 	public int scaleY(int orig){
-		int n = (int)(((double)orig) * scaleY);
-  	return n > 0 ? n: 1;
+		return orig; /* REIMPLEMENT IF EVER NEEDED */
   }
 
 	private void notifyListeners(){

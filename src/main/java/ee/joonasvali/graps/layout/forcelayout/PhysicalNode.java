@@ -13,7 +13,7 @@ public class PhysicalNode {
 	
 	public PhysicalNode(Node node){
 		this.node = node;
-	}
+	}	
 
 	public Force getVelocity() {
   	return velocity;

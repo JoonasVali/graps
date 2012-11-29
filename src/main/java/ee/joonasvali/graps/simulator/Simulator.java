@@ -2,10 +2,12 @@ package ee.joonasvali.graps.simulator;
 
 import java.awt.Canvas;
 import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.MouseListener;
 import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JFrame;
+import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
 import ee.joonasvali.graps.generator.Generator;
@@ -15,14 +17,15 @@ import ee.joonasvali.graps.layout.forcelayout.ForceLayout;
 import ee.joonasvali.graps.layout.pushlayout.ForeignNodeProvider;
 import ee.joonasvali.graps.layout.pushlayout.NodeProvider;
 import ee.joonasvali.graps.layout.pushlayout.PushLayout;
+import ee.joonasvali.graps.util.GraphUtil;
 
 public class Simulator {	
 	private JFrame frame;	
 	private Dimension size = new Dimension(700, 700);
+	private JScrollPane scroll;
 	
 	private static int NODES = 10;
-	private static int PORTS = 20;
-	private static int CANVAS_SIZE = 600;
+	private static int PORTS = 20;	
 	
 	public Simulator(){
 		frame = new JFrame();		
@@ -35,19 +38,22 @@ public class Simulator {
 	public static void main(String[] args) {		
 	  try {
 	    SwingUtilities.invokeAndWait(new Runnable(){
-	    	public void run() {
+	    	public void run() {	    		
 	        Simulator sim = new Simulator();
-	        Generator gen = new Generator(NODES, PORTS, CANVAS_SIZE);
+	        
+	        Generator gen = new Generator(NODES, PORTS, 100 /* Obsolete MAX pos */);
 	        Renderer renderer = new SimpleRenderer();	        
-	        Graph graph = gen.generate();	        
+	        Graph graph = gen.generate();
+	        Point p = GraphUtil.calculateMaxPosition(graph);
 //	        NodeProvider provider = new ForeignNodeProvider(graph);
 	        Layout layout = new ForceLayout(graph);	        
 	        graph.assign(layout, 1);	        
-	        SimulatorCanvas canvas = new SimulatorCanvas(graph, renderer, new Dimension(CANVAS_SIZE, CANVAS_SIZE));
+	        SimulatorCanvas canvas = new SimulatorCanvas(graph, renderer, new Dimension(p.x, p.y));
 	        MouseListener listener = getMouseListener(renderer, canvas);
 	        canvas.addMouseListener(listener);
-	        renderer.addListener(getRepaintListener(canvas));
-	        sim.frame.add(canvas);        
+	        renderer.addListener(getRepaintListener(canvas));	        
+	        sim.scroll = new JScrollPane(canvas);
+	        sim.frame.add(sim.scroll);
 	        sim.frame.setVisible(true);        
 	      }
 
