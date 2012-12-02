@@ -12,7 +12,7 @@ import ee.joonasvali.graps.layout.Layout;
 
 public class ForceLayout implements Layout{	
 	private LinkedList<PhysicalNode> nodes = new LinkedList<PhysicalNode>();
-	private final static double STABLE = 1, DAMPING = 0.30, STRING_STRENGTH = 0.02, COLOUMB = 100;
+	private final static double STABLE = 1, DAMPING = 0.20, STRING_STRENGTH = 0.04, COLOUMB = 100;
 	private Executor executor = Executors.newSingleThreadExecutor();
 	
 	public ForceLayout(Graph graph){		
@@ -44,7 +44,7 @@ public class ForceLayout implements Layout{
 				
 				for(Node other : node.getForeignNodes()){
 					netForce.add(hookeAttraction(node, other));					
-				}							
+				}				
 				
 				netForce.add(hookeAttraction(node, center));					
 											
@@ -61,8 +61,7 @@ public class ForceLayout implements Layout{
 				kinetic.add(new Force(
 					node.getMass() * Math.pow(node.getVelocity().x, 2),
 					node.getMass() * Math.pow(node.getVelocity().y, 2)
-				));
-				System.out.println(kinetic.getAbsolute());
+				));				
 			}			
 			try{
 				TimeUnit.MILLISECONDS.sleep(60);
@@ -86,13 +85,12 @@ public class ForceLayout implements Layout{
   }
 
 	private Force coulombRepulsion(PhysicalNode node, PhysicalNode other) {
-		// Simplified		
 		double xdiff = node.getNode().getLocation().x - other.getNode().getLocation().x;
 		double ydiff = node.getNode().getLocation().y - other.getNode().getLocation().y;
-		double sqrdistance = xdiff*xdiff - ydiff * ydiff;
+		double sqrdistance = xdiff*xdiff + ydiff * ydiff;
 		if(sqrdistance == 0){
-			return new Force(0.001,0.001);
-		}
+			return new Force(10,10);
+		}		
 		return new Force((COLOUMB * (xdiff / sqrdistance)), (COLOUMB * (ydiff / sqrdistance)));
   }
 
