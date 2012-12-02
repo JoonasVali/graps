@@ -10,9 +10,11 @@ import ee.joonasvali.graps.graph.Port;
 public class PhysicalNode {
 	private Force velocity = new Force(0,0);
 	private Node node;
+	private double mass;
 	
 	public PhysicalNode(Node node){
 		this.node = node;
+		this.mass = node.getHeight()*node.getWidth();
 	}	
 
 	public Force getVelocity() {
@@ -38,7 +40,7 @@ public class PhysicalNode {
 	}
 
 	public double getMass() {	 
-	  return 1;
+	  return mass;
   }	
 	
 	public double distance(PhysicalNode other){

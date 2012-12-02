@@ -21,11 +21,11 @@ import ee.joonasvali.graps.util.GraphUtil;
 
 public class Simulator {	
 	private JFrame frame;	
-	private Dimension size = new Dimension(700, 700);
+	private Dimension size = new Dimension(2000, 2000);
 	private JScrollPane scroll;
 	
-	private static int NODES = 25;
-	private static int PORTS = 50;	
+	private static int NODES = 20;
+	private static int PORTS = 60;	
 	
 	public Simulator(){
 		frame = new JFrame();		
@@ -43,12 +43,11 @@ public class Simulator {
 	        
 	        Generator gen = new Generator(NODES, PORTS, 100 /* Obsolete MAX pos */);
 	        Renderer renderer = new SimpleRenderer();	        
-	        Graph graph = gen.generate();
-	        Point p = GraphUtil.calculateMaxPosition(graph);
+	        Graph graph = gen.generate();	        
 //	        NodeProvider provider = new ForeignNodeProvider(graph);
-	        Layout layout = new ForceLayout(graph);	        
+	        Layout layout = new ForceLayout(graph, new Point(500, 500));	        
 	        graph.assign(layout, 1);	        
-	        SimulatorCanvas canvas = new SimulatorCanvas(graph, renderer, new Dimension(p.x, p.y));
+	        SimulatorCanvas canvas = new SimulatorCanvas(graph, renderer, new Dimension(2000, 2000));
 	        MouseListener listener = getMouseListener(renderer, canvas);
 	        canvas.addMouseListener(listener);
 	        renderer.addListener(getRepaintListener(canvas));	        

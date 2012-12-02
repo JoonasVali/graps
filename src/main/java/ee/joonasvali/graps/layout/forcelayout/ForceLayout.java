@@ -12,10 +12,12 @@ import ee.joonasvali.graps.layout.Layout;
 
 public class ForceLayout implements Layout{	
 	private LinkedList<PhysicalNode> nodes = new LinkedList<PhysicalNode>();
-	private final static double STABLE = 15, DAMPING = 0.70, STRING_STRENGTH = 0.06, COLOUMB = 200;
+	private final static double STABLE = 15, DAMPING = 0.80, STRING_STRENGTH = 0.06, COLOUMB = 200;
 	private Executor executor = Executors.newSingleThreadExecutor();
+	private Point center;
 	
-	public ForceLayout(Graph graph){		
+	public ForceLayout(Graph graph, Point center){
+		this.center = center;
 		for(Node n : graph.getNodes()){
 			nodes.add(new PhysicalNode(n));
 		}
@@ -71,8 +73,8 @@ public class ForceLayout implements Layout{
 	}
 	
 	private Force hookeAttraction(PhysicalNode node, Node other) {		
-		double xdiff = (other.getLocation().x - node.getNode().getLocation().x);
-		double ydiff = (other.getLocation().y - node.getNode().getLocation().y);	  
+		double xdiff = (other.getCenter().x - node.getNode().getCenter().x);
+		double ydiff = (other.getCenter().y - node.getNode().getCenter().y);	  
 	  return new Force(xdiff*STRING_STRENGTH, ydiff*STRING_STRENGTH);
   }
 	
@@ -81,13 +83,15 @@ public class ForceLayout implements Layout{
   }
 
 	private Force coulombRepulsion(PhysicalNode node, PhysicalNode other) {
-		double xdiff = node.getNode().getLocation().x - other.getNode().getLocation().x;
-		double ydiff = node.getNode().getLocation().y - other.getNode().getLocation().y;
+		double xdiff = node.getNode().getCenter().x - other.getNode().getCenter().x;
+		double ydiff = node.getNode().getCenter().y - other.getNode().getCenter().y;
 		double sqrdistance = xdiff*xdiff + ydiff * ydiff;
 		if(sqrdistance == 0){
-			return new Force(10,10);
+			return new Force(1,1);
 		}		
-		return new Force((COLOUMB * (xdiff / sqrdistance)), (COLOUMB * (ydiff / sqrdistance)));
+		
+		double massMultiplier = Math.max(node.getMass() * other.getMass() * 0.0000005d, 1);		
+		return new Force((massMultiplier * COLOUMB * (xdiff / sqrdistance)), (massMultiplier * COLOUMB * (ydiff / sqrdistance)));
   }
 
 	private Force sumKinetic() {
@@ -104,12 +108,13 @@ public class ForceLayout implements Layout{
 	
 	
 	class VirtualGravityCenter extends PhysicalNode{
-
+		
+		
 		public VirtualGravityCenter() {
-			super(new Node(new Point(250, 250), new Point(20,20)){
+			super(new Node(center, new Point(20,20)){
 				@Override
 				public Point getLocation() {				  
-				  return new Point(250, 250);
+				  return center;
 				}
 			});
     }

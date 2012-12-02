@@ -50,6 +50,13 @@ public class Node implements Clickable{
   public Point getLocation() {  
 	  return new Point(location);
   }	
+  
+	/**
+   * @return the center of the node
+   */
+  public Point getCenter() {  
+	  return new Point(location.x + size.x / 2, location.y + size.y / 2);
+  }	
 
 	@Override
 	public String toString() {

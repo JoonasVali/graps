@@ -28,7 +28,9 @@ public class Generator {
 	private LinkedList<Node> generateNodes(){
 		LinkedList<Node> res = new LinkedList<Node>();
 		for(int i = 0; i < nodes; i++){
-			Node node = new Node(new Point(GraphUtil.ran(canvasSize),GraphUtil.ran(canvasSize)), new Point(NODE_SIZE,NODE_SIZE));
+			int nodesize= (int)(Math.random()*NODE_SIZE)+NODE_SIZE;
+			Node node = new Node(new Point(GraphUtil.ran(canvasSize),GraphUtil.ran(canvasSize)), 
+					new Point(nodesize, nodesize));
 			res.add(node);
 			for(Port p : node.getOpenPorts()){
 				p.setNode(node);
