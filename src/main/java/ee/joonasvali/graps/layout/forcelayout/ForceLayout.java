@@ -12,7 +12,7 @@ import ee.joonasvali.graps.layout.Layout;
 
 public class ForceLayout implements Layout{	
 	private LinkedList<PhysicalNode> nodes = new LinkedList<PhysicalNode>();
-	private final static double STABLE = 1, DAMPING = 0.70, STRING_STRENGTH = 0.06, COLOUMB = 200;
+	private final static double STABLE = 15, DAMPING = 0.70, STRING_STRENGTH = 0.06, COLOUMB = 200;
 	private Executor executor = Executors.newSingleThreadExecutor();
 	
 	public ForceLayout(Graph graph){		
@@ -32,9 +32,7 @@ public class ForceLayout implements Layout{
 		Force kinetic;
 		do{
 			kinetic = sumKinetic();
-			for(PhysicalNode node: nodes){
-				if(node.getForeignNodes().size() == 0)
-					continue;
+			for(PhysicalNode node: nodes){				
 				Force netForce = new Force();
 				for(PhysicalNode other: nodes){					
 					if(!node.equals(other)){
@@ -63,15 +61,13 @@ public class ForceLayout implements Layout{
 					node.getMass() * Math.pow(node.getVelocity().y, 2)
 				));				
 			}			
+			
 			try{
 				TimeUnit.MILLISECONDS.sleep(60);
 			} catch(Exception e){
 				System.err.println(e);
-			}
-			
-		} while(kinetic.getAbsolute() > STABLE);
-		//System.out.println(nodes.get(0).getNode().getLocation());
-		//nodes.remove(center);
+			}			
+		} while(/*kinetic.getAbsolute() > STABLE*/ true);
 	}
 	
 	private Force hookeAttraction(PhysicalNode node, Node other) {		

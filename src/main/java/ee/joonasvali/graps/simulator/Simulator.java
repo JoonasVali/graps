@@ -24,8 +24,8 @@ public class Simulator {
 	private Dimension size = new Dimension(700, 700);
 	private JScrollPane scroll;
 	
-	private static int NODES = 10;
-	private static int PORTS = 20;	
+	private static int NODES = 25;
+	private static int PORTS = 50;	
 	
 	public Simulator(){
 		frame = new JFrame();		
