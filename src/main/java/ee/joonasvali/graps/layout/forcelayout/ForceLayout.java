@@ -12,7 +12,7 @@ import ee.joonasvali.graps.layout.Layout;
 
 public class ForceLayout implements Layout{	
 	private LinkedList<PhysicalNode> nodes = new LinkedList<PhysicalNode>();
-	private final static double STABLE = 1, DAMPING = 0.20, STRING_STRENGTH = 0.04, COLOUMB = 100;
+	private final static double STABLE = 1, DAMPING = 0.70, STRING_STRENGTH = 0.06, COLOUMB = 200;
 	private Executor executor = Executors.newSingleThreadExecutor();
 	
 	public ForceLayout(Graph graph){		
