@@ -1,7 +1,9 @@
 package ee.joonasvali.graps.layout.forcelayout;
 
 import java.awt.Point;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -10,10 +12,12 @@ import ee.joonasvali.graps.graph.Graph;
 import ee.joonasvali.graps.graph.Node;
 import ee.joonasvali.graps.layout.Layout;
 import ee.joonasvali.graps.util.ClickableEdgeUtil;
+import ee.joonasvali.graps.util.FlagManager;
 
 public class ForceLayout implements Layout{	
-	private LinkedList<PhysicalNode> nodes = new LinkedList<PhysicalNode>();
-	private final static double STABLE = 15, DAMPING = 0.50, STRING_STRENGTH = 0.06, COLOUMB = 250;
+	public final static String EXCLUDE = "exclude_node"; 
+	private LinkedList<PhysicalNode> nodes = new LinkedList<PhysicalNode>();	
+	private final static double STABLE = 15, DAMPING = 0.65, STRING_STRENGTH = 0.06, COLOUMB = 200;
 	private Executor executor = Executors.newSingleThreadExecutor();
 	private Point center;
 	
@@ -35,7 +39,12 @@ public class ForceLayout implements Layout{
 		Force kinetic;
 		do{
 			kinetic = sumKinetic();
-			for(PhysicalNode node: nodes){				
+			for(PhysicalNode node: nodes){
+				boolean exclude = FlagManager.getInstance(Node.class).get(node.getNode(), EXCLUDE);
+				if(exclude){
+					continue;
+				}
+				
 				Force netForce = new Force();
 				for(PhysicalNode other: nodes){					
 					if(!node.equals(other)){
@@ -53,6 +62,11 @@ public class ForceLayout implements Layout{
 				node.getVelocity().y = (node.getVelocity().y +(netForce.y)) * DAMPING;			
 			}	
 			for(PhysicalNode node: nodes){
+				boolean exclude = FlagManager.getInstance(Node.class).get(node.getNode(), EXCLUDE);
+				if(exclude){
+					continue;
+				}
+				
 				node.getNode().setLocation(new Point(
 						(int)(node.getNode().getLocation().x + node.getVelocity().x), 
 						(int)(node.getNode().getLocation().y + node.getVelocity().y)	
@@ -65,7 +79,7 @@ public class ForceLayout implements Layout{
 			}			
 			
 			try{
-				TimeUnit.MILLISECONDS.sleep(60);
+				TimeUnit.MILLISECONDS.sleep(20);
 			} catch(Exception e){
 				System.err.println(e);
 			}			
@@ -128,7 +142,7 @@ public class ForceLayout implements Layout{
 		
 		@Override
 		public double getMass() {		  
-		  return 10;
+		  return 5;
 		} 
 
 		

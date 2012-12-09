@@ -15,7 +15,10 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.SwingUtilities;
 
 import ee.joonasvali.graps.graph.Clickable;
+import ee.joonasvali.graps.graph.Node;
+import ee.joonasvali.graps.layout.forcelayout.ForceLayout;
 import ee.joonasvali.graps.util.Area;
+import ee.joonasvali.graps.util.FlagManager;
 
 public class SimulatorMouseListener implements MouseListener{
 	// DO NOT ADD OR REMOVE ANYTHING, HANDLED BY RENDERER
@@ -51,7 +54,9 @@ public class SimulatorMouseListener implements MouseListener{
 		Clickable selected = getClickable(e.getPoint());
 		renderer.setSelected(selected);
 		drag = selected;  
-		
+		if(drag instanceof Node){
+			FlagManager.getInstance(Node.class).set((Node)drag, ForceLayout.EXCLUDE, true);
+		}
 		executor.execute(makeRunnable(e.getPoint()));		
   }
 
@@ -82,6 +87,7 @@ public class SimulatorMouseListener implements MouseListener{
   }
 
 	public void mouseReleased(MouseEvent e) {
+		FlagManager.getInstance(Node.class).set((Node)drag, ForceLayout.EXCLUDE, false);
 	  drag = null;	  
   }	
 	

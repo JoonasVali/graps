@@ -7,5 +7,5 @@ public interface Clickable {
 	public int getHeight();	
   public Point getLocation();  
   public Point getCenter();
-  public void setLocation(Point location);
+  public void setLocation(Point location);  
 }

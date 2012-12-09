@@ -7,27 +7,23 @@ import ee.joonasvali.graps.graph.Clickable;
 public class ClickableEdgeUtil {
 	public static Point edgeFor(Clickable node, Clickable other){
 				
-		if(contains(node, other.getLocation())){
-			System.out.println(0);
-			return other.getLocation();
+		if(contains(node, other.getLocation())){		
+			return node.getCenter();
 		}
 		
 		Point lowerRight = new Point(other.getLocation().x + other.getWidth(), other.getLocation().y + other.getHeight());
-		if(contains(node, lowerRight)){
-			System.out.println(1);
-			return lowerRight;
+		if(contains(node, lowerRight)){		
+			return node.getCenter();
 		}
 		
 		Point lowerLeft = new Point(other.getLocation().x, other.getLocation().y + other.getHeight());
 		if(contains(node, lowerLeft)){
-			System.out.println(2);
-			return lowerLeft;
+			return node.getCenter();
 		}
 		
 		Point upperRight = new Point(other.getLocation().x + other.getWidth(), other.getLocation().y);
 		if(contains(node, upperRight)){
-			System.out.println(3);
-			return upperRight;
+			return node.getCenter();
 		}
 
 		return edgeFor(node, other.getCenter());				
