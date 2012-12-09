@@ -1,8 +1,8 @@
 package ee.joonasvali.graps.simulator;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics2D;
+import java.awt.MouseInfo;
 import java.awt.Point;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,7 +15,7 @@ import ee.joonasvali.graps.graph.Graph;
 import ee.joonasvali.graps.graph.Node;
 import ee.joonasvali.graps.graph.Port;
 import ee.joonasvali.graps.util.Area;
-import ee.joonasvali.graps.util.GraphUtil;
+import ee.joonasvali.graps.util.ClickableEdgeUtil;
 
 public class SimpleRenderer implements Renderer{
 	private static final int PORT_SIZE = 3;	
@@ -26,7 +26,7 @@ public class SimpleRenderer implements Renderer{
   private ColorBlinker blink = new ColorBlinker(200, new Color(0,0,255), new Color(0,255,0), new Color(255,0,0));
   private LinkedList<ChangeListener> listeners = new LinkedList<ChangeListener>();
 	
-	public void draw(Graph graph, Graphics2D g, Dimension size) {	  
+	public void draw(Graph graph, Graphics2D g, Point mouse) {	  
 	  Set<Port> painted = new HashSet<Port>();
 	  for(Node n: graph.getNodes()){
 	  	drawNodes(g, n);
@@ -40,10 +40,10 @@ public class SimpleRenderer implements Renderer{
 	  		}
 	  	}
 	  }	  
-	  drawSelected(g);
+	  drawSelected(g, mouse);
   }
 
-	private void drawSelected(Graphics2D g) {
+	private void drawSelected(Graphics2D g, Point mouse) {
 		if(selected == null) return;
 		g.setColor(Color.GREEN);
 		g.drawRect(
@@ -52,11 +52,27 @@ public class SimpleRenderer implements Renderer{
 				scaleX(selected.getWidth()+ 4), 
 				scaleY(selected.getHeight()+ 4));
 		g.setColor(Color.BLACK);
-		if(selected != null && selected instanceof Node){
+		if(selected instanceof Node){
 			drawRelatives(g);
-		}
+			
+			Point collision = ClickableEdgeUtil.edgeFor((Node)selected, mouse);
+			g.drawRect(collision.x, collision.y, 3,3);
+			/*g.drawLine(
+					mouse.getLocation().x,
+					mouse.getLocation().y,
+					scaleX(((Node)selected).getCenter().x),
+					scaleY(((Node)selected).getCenter().y)
+			);*/
+		}		
+		
+		
+		
+		
+		
+		
+		
   }
-
+	
 	private void drawRelatives(Graphics2D g) {
 	  Node n = (Node)selected;
 	  for(Port p : n.getPorts()){
@@ -89,7 +105,7 @@ public class SimpleRenderer implements Renderer{
 			a = new Area(x, y, width, height);
 			map.put(n, a);
 		}
-	  g.drawRect(x, y, width, height);
+	  g.drawRect(x, y, width, height);	 
   }
 
 	private void drawLines(Graphics2D g, Port p) {

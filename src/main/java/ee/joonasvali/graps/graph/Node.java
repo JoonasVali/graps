@@ -8,7 +8,7 @@ import java.util.List;
 public class Node implements Clickable{
 	private List<Port> ports;
 	private Point location;
-	private Point size;
+	private Point size;	
 	
 	public Node(Point location, Point size){
 		ports = new LinkedList<Port>();
@@ -69,5 +69,5 @@ public class Node implements Clickable{
 	public void setLocation(Point point) {
 	  location.x = point.x;
 	  location.y = point.y;	  
-  }
+  }	
 }

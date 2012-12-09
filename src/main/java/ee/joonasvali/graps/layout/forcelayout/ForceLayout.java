@@ -9,10 +9,11 @@ import java.util.concurrent.TimeUnit;
 import ee.joonasvali.graps.graph.Graph;
 import ee.joonasvali.graps.graph.Node;
 import ee.joonasvali.graps.layout.Layout;
+import ee.joonasvali.graps.util.ClickableEdgeUtil;
 
 public class ForceLayout implements Layout{	
 	private LinkedList<PhysicalNode> nodes = new LinkedList<PhysicalNode>();
-	private final static double STABLE = 15, DAMPING = 0.80, STRING_STRENGTH = 0.06, COLOUMB = 200;
+	private final static double STABLE = 15, DAMPING = 0.50, STRING_STRENGTH = 0.06, COLOUMB = 250;
 	private Executor executor = Executors.newSingleThreadExecutor();
 	private Point center;
 	
@@ -38,19 +39,18 @@ public class ForceLayout implements Layout{
 				Force netForce = new Force();
 				for(PhysicalNode other: nodes){					
 					if(!node.equals(other)){
-						netForce.add(coulombRepulsion(node, other));
+						netForce.add(coulombRepulsion(node, other));						
 					}
 				}
 				
 				for(Node other : node.getForeignNodes()){
-					netForce.add(hookeAttraction(node, other));					
+					netForce.add(hookeAttraction(node, other));				
 				}				
 				
 				netForce.add(hookeAttraction(node, center));					
-											
-				
+							
 				node.getVelocity().x = (node.getVelocity().x +(netForce.x)) * DAMPING;
-				node.getVelocity().y = (node.getVelocity().y +(netForce.y)) * DAMPING;				
+				node.getVelocity().y = (node.getVelocity().y +(netForce.y)) * DAMPING;			
 			}	
 			for(PhysicalNode node: nodes){
 				node.getNode().setLocation(new Point(
@@ -73,8 +73,10 @@ public class ForceLayout implements Layout{
 	}
 	
 	private Force hookeAttraction(PhysicalNode node, Node other) {		
-		double xdiff = (other.getCenter().x - node.getNode().getCenter().x);
-		double ydiff = (other.getCenter().y - node.getNode().getCenter().y);	  
+		Point edgePosNode = ClickableEdgeUtil.edgeFor(node.getNode(), other);
+		Point edgePosOther = ClickableEdgeUtil.edgeFor(other, node.getNode());
+		double xdiff = (edgePosOther.x - edgePosNode.x);
+		double ydiff = (edgePosOther.y - edgePosNode.y);	  
 	  return new Force(xdiff*STRING_STRENGTH, ydiff*STRING_STRENGTH);
   }
 	
@@ -83,16 +85,18 @@ public class ForceLayout implements Layout{
   }
 
 	private Force coulombRepulsion(PhysicalNode node, PhysicalNode other) {
-		double xdiff = node.getNode().getCenter().x - other.getNode().getCenter().x;
-		double ydiff = node.getNode().getCenter().y - other.getNode().getCenter().y;
+		Point edgePosNode = ClickableEdgeUtil.edgeFor(node.getNode(), other.getNode());
+		Point edgePosOther = ClickableEdgeUtil.edgeFor(other.getNode(), node.getNode());
+		double xdiff = edgePosNode.x - edgePosOther.x;
+		double ydiff = edgePosNode.y - edgePosOther.y;
 		double sqrdistance = xdiff*xdiff + ydiff * ydiff;
 		if(sqrdistance == 0){
 			return new Force(1,1);
 		}		
 		
-		double massMultiplier = Math.max(node.getMass() * other.getMass() * 0.0000005d, 1);		
+		double massMultiplier = Math.max(node.getMass() * other.getMass() * 0.005d, 1);		
 		return new Force((massMultiplier * COLOUMB * (xdiff / sqrdistance)), (massMultiplier * COLOUMB * (ydiff / sqrdistance)));
-  }
+  }	
 
 	private Force sumKinetic() {
 		Force kinetic = new Force(0,0);
@@ -124,7 +128,7 @@ public class ForceLayout implements Layout{
 		
 		@Override
 		public double getMass() {		  
-		  return 13000;
+		  return 10;
 		} 
 
 		

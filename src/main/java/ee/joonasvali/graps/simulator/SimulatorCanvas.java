@@ -1,28 +1,34 @@
 package ee.joonasvali.graps.simulator;
 
 import java.awt.Canvas;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import javax.swing.SwingUtilities;
 
 import ee.joonasvali.graps.graph.Graph;
 
 class SimulatorCanvas extends Canvas{	
   private static final long serialVersionUID = 1L;
   private Renderer renderer;
-  private Graph graph;
-  private Dimension size;
+  private Graph graph;  
   private Image image; 
 	private Graphics graphics;
       
 	public SimulatorCanvas(Graph graph, Renderer renderer, Dimension size) {
     this.graph = graph;
-    this.renderer = renderer;
-    this.size = size;
+    this.renderer = renderer;    
     this.setSize(size);    
+    this.setBackground(new Color(200,200,200));
+    System.out.println(this.getWidth());
+    System.out.println(this.getHeight());
     Timer animationTimer = new Timer();
 		animationTimer.scheduleAtFixedRate(new TimerTask() {
 			@Override
@@ -53,8 +59,10 @@ class SimulatorCanvas extends Canvas{
 		if (image == null) {
 			initGraphics();
 		}
+		Point mouse = MouseInfo.getPointerInfo().getLocation();						
+		SwingUtilities.convertPointFromScreen(mouse, this);		
 		graphics.clearRect(0, 0, getWidth(), getHeight());				
-		renderer.draw(graph, (Graphics2D)graphics, size);
+		renderer.draw(graph, (Graphics2D)graphics, mouse);
 		g.drawImage(image, 0, 0, this);
 	}
 	

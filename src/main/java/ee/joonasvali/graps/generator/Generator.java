@@ -13,7 +13,7 @@ public class Generator {
 	private int nodes;
   private int ports;
   private int canvasSize;
-	private static int NODE_SIZE = 30; 
+	private static int NODE_SIZE = 50; 
   
 	public Generator(int nodes, int ports, int canvasSize){
 		this.canvasSize = canvasSize;
@@ -28,9 +28,10 @@ public class Generator {
 	private LinkedList<Node> generateNodes(){
 		LinkedList<Node> res = new LinkedList<Node>();
 		for(int i = 0; i < nodes; i++){
-			int nodesize= (int)(Math.random()*NODE_SIZE)+NODE_SIZE;
+			int nodesizeX= (int)(Math.random()*NODE_SIZE)+NODE_SIZE;
+			int nodesizeY= (int)(Math.random()*NODE_SIZE)+NODE_SIZE;
 			Node node = new Node(new Point(GraphUtil.ran(canvasSize),GraphUtil.ran(canvasSize)), 
-					new Point(nodesize, nodesize));
+					new Point(nodesizeX, nodesizeY));
 			res.add(node);
 			for(Port p : node.getOpenPorts()){
 				p.setNode(node);
