@@ -10,10 +10,11 @@ import ee.joonasvali.graps.graph.Graph;
 import ee.joonasvali.graps.graph.Node;
 import ee.joonasvali.graps.graph.Port;
 
-public class ForeignNodeProvider implements NodeProvider{
+public class ForeignNodeProvider extends NodeProvider{
 	private LinkedList<Node> nodes;
 	
 	public ForeignNodeProvider(Graph graph){
+		super(graph.getNodes());
 		this.nodes = graph.getNodes();
 		Collections.sort(this.nodes, getComparator());
 	}

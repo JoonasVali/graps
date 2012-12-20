@@ -1,9 +1,7 @@
 package ee.joonasvali.graps.layout.forcelayout;
 
 import java.awt.Point;
-import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -17,15 +15,25 @@ import ee.joonasvali.graps.util.FlagManager;
 public class ForceLayout implements Layout{	
 	public final static String EXCLUDE = "exclude_node"; 
 	private LinkedList<PhysicalNode> nodes = new LinkedList<PhysicalNode>();	
-	private final static double STABLE = 15, DAMPING = 0.65, STRING_STRENGTH = 0.06, COLOUMB = 200;
+	private LinkedList<UpdateListener> listeners = new LinkedList<UpdateListener>();
+	private final static double STABLE = 30, DAMPING = 0.65, STRING_STRENGTH = 0.06, COLOUMB = 200;
 	private Executor executor = Executors.newSingleThreadExecutor();
 	private Point center;
+	private boolean run;
 	
-	public ForceLayout(Graph graph, Point center){
-		this.center = center;
-		for(Node n : graph.getNodes()){
+	public ForceLayout(Point center){
+		this.center = center;		
+	}
+	
+	public void addListener(UpdateListener listener){
+		listeners.add(listener);
+	}
+	
+	public void execute(Graph graph){
+		run = true;
+		for(Node n : graph.getNodes()){			
 			nodes.add(new PhysicalNode(n));
-		}
+		}	
 		
 		executor.execute(new Runnable() {			
 			public void run() {
@@ -34,12 +42,12 @@ public class ForceLayout implements Layout{
 		});
 	}
 	
-	public void place(){		
+	private void place(){		
 		VirtualGravityCenter center = new VirtualGravityCenter();		
 		Force kinetic;
-		do{
+		do{			
 			kinetic = sumKinetic();
-			for(PhysicalNode node: nodes){
+			for(PhysicalNode node: nodes){				
 				boolean exclude = FlagManager.getInstance(Node.class).get(node.getNode(), EXCLUDE);
 				if(exclude){
 					continue;
@@ -83,9 +91,16 @@ public class ForceLayout implements Layout{
 			} catch(Exception e){
 				System.err.println(e);
 			}			
-		} while(/*kinetic.getAbsolute() > STABLE*/ true);
+			notifyListeners();
+		} while(run && kinetic.getAbsolute() > STABLE);
 	}
 	
+	private void notifyListeners() {
+	  for(UpdateListener l: listeners){
+	  	l.update();	  	
+	  }	  
+  }
+
 	private Force hookeAttraction(PhysicalNode node, Node other) {		
 		Point edgePosNode = ClickableEdgeUtil.edgeFor(node.getNode(), other);
 		Point edgePosOther = ClickableEdgeUtil.edgeFor(other, node.getNode());
@@ -98,7 +113,7 @@ public class ForceLayout implements Layout{
 		return hookeAttraction(node, other.getNode());
   }
 
-	private Force coulombRepulsion(PhysicalNode node, PhysicalNode other) {
+	private Force coulombRepulsion(PhysicalNode node, PhysicalNode other) {		
 		Point edgePosNode = ClickableEdgeUtil.edgeFor(node.getNode(), other.getNode());
 		Point edgePosOther = ClickableEdgeUtil.edgeFor(other.getNode(), node.getNode());
 		double xdiff = edgePosNode.x - edgePosOther.x;
@@ -143,9 +158,10 @@ public class ForceLayout implements Layout{
 		@Override
 		public double getMass() {		  
 		  return 5;
-		} 
-
-		
-		
+		}	
 	}
+
+	public void stop() {
+	  run = false;	  
+  }
 }

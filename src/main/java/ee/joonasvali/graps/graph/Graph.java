@@ -1,6 +1,7 @@
 package ee.joonasvali.graps.graph;
 
 import java.awt.Point;
+import java.util.Collection;
 import java.util.LinkedList;
 
 import ee.joonasvali.graps.layout.Layout;
@@ -8,16 +9,16 @@ import ee.joonasvali.graps.layout.Layout;
 public class Graph {
 	LinkedList<Node> nodes;
 	
-	public Graph(LinkedList<Node> nodes){		
-		this.nodes = nodes;		
+	public Graph(Collection<Node> nodes){		
+		this.nodes = new LinkedList<Node>(nodes);		
 	}
 	
 	public LinkedList<Node> getNodes() {
   	return new LinkedList<Node>(nodes);
   }
 
-	public void setNodes(LinkedList<Node> nodes) {		
-  	this.nodes = nodes;
+	public void setNodes(Collection<Node> nodes) {		
+  	this.nodes = new LinkedList<Node>(nodes);
   }
 	
 	@Override

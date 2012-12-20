@@ -14,10 +14,10 @@ public class PhysicalNode {
 	private double mass;
 	private Collection<Node> foreignNodes;
 	
-	public PhysicalNode(Node node){
+	public PhysicalNode(Node node){		
 		this.node = node;
 		foreignNodes = createForeignNodes();		
-		this.mass = foreignNodes.size()* 10;
+		this.mass = Math.max(0.1, foreignNodes.size())* 10;
 	}	
 
 	public Force getVelocity() {
@@ -38,10 +38,12 @@ public class PhysicalNode {
 	
 	private Collection<Node> createForeignNodes(){
 		Set<Node> set = new HashSet<Node>();		
-		for(Port p : node.getPorts()){				
-			if(!p.getPort().getNode().equals(node)){					
-				set.add(p.getPort().getNode());
-			}
+		for(Port p : node.getPorts()){			
+			if(p.getNode() != null && p.getPort() != null && p.getPort().getNode() != null){
+				if(!p.getPort().getNode().equals(node)){					
+					set.add(p.getPort().getNode());
+				} 
+			} 
 		}
 		return set;	
 	}
