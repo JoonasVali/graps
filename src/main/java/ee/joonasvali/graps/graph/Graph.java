@@ -1,10 +1,7 @@
 package ee.joonasvali.graps.graph;
 
-import java.awt.Point;
 import java.util.Collection;
 import java.util.LinkedList;
-
-import ee.joonasvali.graps.layout.Layout;
 
 public class Graph {
 	LinkedList<Node> nodes;
@@ -29,15 +26,5 @@ public class Graph {
 	  	strb.append(n);
 	  }
 	  return strb.toString();
-	}
-
-	public void assign(Layout layout, int scale) {		
-	  for(Node node: nodes){	  	
-	  	Point position = new Point(layout.getPosition(node));	  	
-	  	position.x *= scale;
-	  	position.y *= scale;
-	  	node.setLocation(position);
-	  }	  
-  }
-	
+	}	
 }

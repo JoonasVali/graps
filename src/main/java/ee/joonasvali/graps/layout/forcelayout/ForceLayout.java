@@ -11,19 +11,16 @@ import ee.joonasvali.graps.graph.Node;
 import ee.joonasvali.graps.layout.Layout;
 import ee.joonasvali.graps.util.ClickableEdgeUtil;
 import ee.joonasvali.graps.util.FlagManager;
+import ee.joonasvali.graps.util.GraphUtil;
 
 public class ForceLayout implements Layout{	
 	public final static String EXCLUDE = "exclude_node"; 
 	private LinkedList<PhysicalNode> nodes = new LinkedList<PhysicalNode>();	
 	private LinkedList<UpdateListener> listeners = new LinkedList<UpdateListener>();
-	private final static double STABLE = 30, DAMPING = 0.65, STRING_STRENGTH = 0.06, COLOUMB = 200;
-	private Executor executor = Executors.newSingleThreadExecutor();
-	private Point center;
+	private final static double STABLE = 30, DAMPING = 0.65, STRING_STRENGTH = 0.08, COLOUMB = 100, MASS_CONSTANT = 0.003d;
+	private Executor executor = Executors.newSingleThreadExecutor();	
 	private boolean run;
-	
-	public ForceLayout(Point center){
-		this.center = center;		
-	}
+	private Point offset = new Point(0,0);
 	
 	public void addListener(UpdateListener listener){
 		listeners.add(listener);
@@ -43,7 +40,7 @@ public class ForceLayout implements Layout{
 	}
 	
 	private void place(){		
-		VirtualGravityCenter center = new VirtualGravityCenter();		
+		
 		Force kinetic;
 		do{			
 			kinetic = sumKinetic();
@@ -62,9 +59,7 @@ public class ForceLayout implements Layout{
 				
 				for(Node other : node.getForeignNodes()){
 					netForce.add(hookeAttraction(node, other));				
-				}				
-				
-				netForce.add(hookeAttraction(node, center));					
+				}							
 							
 				node.getVelocity().x = (node.getVelocity().x +(netForce.x)) * DAMPING;
 				node.getVelocity().y = (node.getVelocity().y +(netForce.y)) * DAMPING;			
@@ -75,10 +70,10 @@ public class ForceLayout implements Layout{
 					continue;
 				}
 				
-				node.getNode().setLocation(new Point(
-						(int)(node.getNode().getLocation().x + node.getVelocity().x), 
-						(int)(node.getNode().getLocation().y + node.getVelocity().y)	
-				));
+				node.setLocation(new Point(
+						(int)(node.getNode().getLocation().x + node.getVelocity().x + offset.x), 
+						(int)(node.getNode().getLocation().y + node.getVelocity().y + offset.y)	
+				));			
 							
 				kinetic.add(new Force(
 					node.getMass() * Math.pow(node.getVelocity().x, 2),
@@ -91,8 +86,17 @@ public class ForceLayout implements Layout{
 			} catch(Exception e){
 				System.err.println(e);
 			}			
+			
+			Point minvals = GraphUtil.calculateMinPosition(nodes);						
+			offset.x = -(minvals.x);
+			offset.y = -(minvals.y);		
+			
 			notifyListeners();
 		} while(run && kinetic.getAbsolute() > STABLE);
+	}
+	
+	public Point getOffset(){
+		return offset;
 	}
 	
 	private void notifyListeners() {
@@ -113,17 +117,18 @@ public class ForceLayout implements Layout{
 		return hookeAttraction(node, other.getNode());
   }
 
-	private Force coulombRepulsion(PhysicalNode node, PhysicalNode other) {		
+	private Force coulombRepulsion(PhysicalNode node, PhysicalNode other) {	
+		if(node.equals(other)) return new Force (0,0);
 		Point edgePosNode = ClickableEdgeUtil.edgeFor(node.getNode(), other.getNode());
 		Point edgePosOther = ClickableEdgeUtil.edgeFor(other.getNode(), node.getNode());
 		double xdiff = edgePosNode.x - edgePosOther.x;
 		double ydiff = edgePosNode.y - edgePosOther.y;
 		double sqrdistance = xdiff*xdiff + ydiff * ydiff;
-		if(sqrdistance == 0){
-			return new Force(1,1);
+		if(sqrdistance == 0){			
+			return new Force(Math.random() - 0.5d, Math.random() - 0.5d);
 		}		
 		
-		double massMultiplier = Math.max(node.getMass() * other.getMass() * 0.005d, 1);		
+		double massMultiplier = Math.max(node.getMass() * other.getMass() * MASS_CONSTANT, 1);		
 		return new Force((massMultiplier * COLOUMB * (xdiff / sqrdistance)), (massMultiplier * COLOUMB * (ydiff / sqrdistance)));
   }	
 
@@ -134,33 +139,7 @@ public class ForceLayout implements Layout{
 	  }
 	  return kinetic;
   }
-
-	public Point getPosition(Node node) {	  
-	  return node.getLocation();
-  }
 	
-	
-	class VirtualGravityCenter extends PhysicalNode{
-		
-		
-		public VirtualGravityCenter() {
-			super(new Node(center, new Point(20,20)){
-				@Override
-				public Point getLocation() {				  
-				  return center;
-				}
-			});
-    }
-		
-		@Override
-		public void setVelocity(Force velocity) {	}
-		
-		@Override
-		public double getMass() {		  
-		  return 5;
-		}	
-	}
-
 	public void stop() {
 	  run = false;	  
   }

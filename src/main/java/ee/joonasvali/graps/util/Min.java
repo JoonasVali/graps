@@ -1,13 +1,13 @@
 package ee.joonasvali.graps.util;
 
-public class Max {
-	private int max;
+public class Min {
+	private int min;
 	
 	public void add(int number){
-		max = Math.max(number, max);
+		min = Math.min(number, min);
 	}
 	
 	public int get(){
-		return max;
+		return min;
 	}
 }

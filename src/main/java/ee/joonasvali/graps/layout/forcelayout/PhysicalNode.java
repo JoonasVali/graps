@@ -1,14 +1,16 @@
 package ee.joonasvali.graps.layout.forcelayout;
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import ee.joonasvali.graps.graph.Clickable;
 import ee.joonasvali.graps.graph.Node;
 import ee.joonasvali.graps.graph.Port;
 
-public class PhysicalNode {
+public class PhysicalNode implements Clickable{
 	private Force velocity = new Force(0,0);
 	private Node node;
 	private double mass;
@@ -59,4 +61,24 @@ public class PhysicalNode {
 					Math.pow(other.getNode().getLocation().y - node.getLocation().y, 2)
 				);
 	}
+
+	public int getWidth() {	  
+	  return node.getWidth();
+  }
+
+	public int getHeight() {	  
+	  return node.getHeight();
+  }
+
+	public Point getLocation() {	  
+	  return node.getLocation();
+  }
+
+	public Point getCenter() {	  
+	  return node.getCenter();
+  }
+
+	public void setLocation(Point location) {
+	  node.setLocation(location);	  
+  }
 }

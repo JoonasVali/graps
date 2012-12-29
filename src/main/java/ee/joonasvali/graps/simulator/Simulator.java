@@ -14,6 +14,7 @@ import ee.joonasvali.graps.generator.Generator;
 import ee.joonasvali.graps.graph.Graph;
 import ee.joonasvali.graps.layout.Layout;
 import ee.joonasvali.graps.layout.forcelayout.ForceLayout;
+import ee.joonasvali.graps.layout.forcelayout.UpdateListener;
 
 public class Simulator {	
 	private JFrame frame;	
@@ -40,10 +41,11 @@ public class Simulator {
 	        Generator gen = new Generator(NODES, PORTS, 100 /* Obsolete MAX pos */);
 	        Renderer renderer = new SimpleRenderer();	        
 	        Graph graph = gen.generate();	        
-//	        NodeProvider provider = new ForeignNodeProvider(graph);
-	        Layout layout = new ForceLayout(new Point(500, 500));
-	        layout.execute(graph);
-	        //graph.assign(layout, 1);	        
+
+	        Layout layout = new ForceLayout();	        
+	        layout.execute(graph);	        
+	        
+	        
 	        SimulatorCanvas canvas = new SimulatorCanvas(graph, renderer, new Dimension(2000, 2000));
 	        MouseListener listener = getMouseListener(renderer, canvas);
 	        canvas.addMouseListener(listener);

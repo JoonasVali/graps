@@ -1,24 +1,31 @@
 package ee.joonasvali.graps.util;
 
 import java.awt.Point;
+import java.util.Collection;
 
-import ee.joonasvali.graps.graph.Graph;
-import ee.joonasvali.graps.graph.Node;
-import ee.joonasvali.graps.graph.Port;
+import ee.joonasvali.graps.graph.Clickable;
 
 public class GraphUtil {
-	public static Point calculateMaxPosition(Graph g){
+	public static Point calculateMaxPosition(Collection<? extends Clickable> nodes){
 		Point pos = new Point(0,0);
 		Max x = new Max();
 		Max y = new Max();
-	  for(Node node: g.getNodes()){
+	  for(Clickable node: nodes){
 	  	x.add(node.getLocation().x+node.getWidth());
-	  	y.add(node.getLocation().y+node.getHeight());
-	  	for(Port p: node.getOpenPorts()){
-	  	// Assumes Graph connectors have relative positions to nodes 
-	  		x.add(node.getLocation().x+node.getWidth() + p.getLocation().x+node.getWidth()); 
-	  		y.add(node.getLocation().y+node.getHeight() + p.getLocation().y+node.getHeight());
-	  	}
+	  	y.add(node.getLocation().y+node.getHeight());	  	
+	  }
+	  pos.x = x.get();
+	  pos.y = y.get();
+	  return pos;
+	}
+	
+	public static Point calculateMinPosition(Collection<? extends Clickable> nodes){
+		Point pos = new Point(0,0);
+		Min x = new Min();
+		Min y = new Min();
+	  for(Clickable node: nodes){
+	  	x.add(node.getLocation().x);
+	  	y.add(node.getLocation().y);	  	
 	  }
 	  pos.x = x.get();
 	  pos.y = y.get();
