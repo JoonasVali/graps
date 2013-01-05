@@ -1,7 +1,7 @@
 package ee.joonasvali.graps.util;
 
 public class Max {
-	private int max;
+	private int max = Integer.MIN_VALUE;
 	
 	public void add(int number){
 		max = Math.max(number, max);
