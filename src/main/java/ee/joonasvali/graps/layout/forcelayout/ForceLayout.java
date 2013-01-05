@@ -14,7 +14,7 @@ import ee.joonasvali.graps.util.FlagManager;
 import ee.joonasvali.graps.util.GraphUtil;
 
 public class ForceLayout implements Layout{	
-	public final static String EXCLUDE = "exclude_node"; 
+	public final static String EXCLUDE = "forcelayout_exclude_node"; 
 	private LinkedList<PhysicalNode> nodes = new LinkedList<PhysicalNode>();	
 	private LinkedList<UpdateListener> listeners = new LinkedList<UpdateListener>();
 	private final static double STABLE = 30, DAMPING = 0.65, STRING_STRENGTH = 0.08, COLOUMB = 100, MASS_CONSTANT = 0.003d;
@@ -28,6 +28,7 @@ public class ForceLayout implements Layout{
 	
 	public void execute(Graph graph){
 		run = true;
+		nodes.clear();
 		for(Node n : graph.getNodes()){			
 			nodes.add(new PhysicalNode(n));
 		}	
