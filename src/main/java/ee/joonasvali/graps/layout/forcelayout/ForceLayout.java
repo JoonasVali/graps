@@ -90,8 +90,7 @@ public class ForceLayout implements Layout{
 			
 			Point minvals = GraphUtil.calculateMinPosition(nodes);						
 			offset.x = -(minvals.x) + 20;
-			offset.y = -(minvals.y) + 20;		
-			System.out.println(minvals);
+			offset.y = -(minvals.y) + 20;				
 			notifyListeners();
 		} while(run && kinetic.getAbsolute() > STABLE);
 	}
