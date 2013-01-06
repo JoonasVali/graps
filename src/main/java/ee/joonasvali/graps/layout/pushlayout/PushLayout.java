@@ -41,4 +41,9 @@ public class PushLayout implements Layout{
 	  // TODO Auto-generated method stub
 	  
   }
+
+	public void removeListener(UpdateListener listener) {
+	  // TODO Auto-generated method stub
+	  
+  }
 }

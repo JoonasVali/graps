@@ -24,10 +24,29 @@ public class Simulator {
 	private static int NODES = 30;
 	private static int PORTS = 100;	
 	
-	public Simulator(){
+	public Simulator(Graph graph, boolean exitOnClose){
 		frame = new JFrame();		
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		if(exitOnClose){
+			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		}
+		
 		frame.setSize(size);
+		
+		Renderer renderer = new SimpleRenderer();	        
+    
+
+    Layout layout = new ForceLayout();	        
+    layout.execute(graph);	        
+    
+    
+    SimulatorCanvas canvas = new SimulatorCanvas(graph, renderer, new Dimension(2000, 2000));
+    MouseListener listener = getMouseListener(renderer, canvas);
+    canvas.addMouseListener(listener);
+    renderer.addListener(getRepaintListener(canvas));	        
+    this.scroll = new JScrollPane(canvas);
+    this.frame.add(this.scroll);
+    this.frame.setVisible(true);
 	}
 	
 	
@@ -36,36 +55,10 @@ public class Simulator {
 	  try {
 	    SwingUtilities.invokeAndWait(new Runnable(){
 	    	public void run() {	    		
-	        Simulator sim = new Simulator();
-	        
-	        Generator gen = new Generator(NODES, PORTS, 100 /* Obsolete MAX pos */);
-	        Renderer renderer = new SimpleRenderer();	        
-	        Graph graph = gen.generate();	        
-
-	        Layout layout = new ForceLayout();	        
-	        layout.execute(graph);	        
-	        
-	        
-	        SimulatorCanvas canvas = new SimulatorCanvas(graph, renderer, new Dimension(2000, 2000));
-	        MouseListener listener = getMouseListener(renderer, canvas);
-	        canvas.addMouseListener(listener);
-	        renderer.addListener(getRepaintListener(canvas));	        
-	        sim.scroll = new JScrollPane(canvas);
-	        sim.frame.add(sim.scroll);
-	        sim.frame.setVisible(true);        
-	      }
-
-				private ChangeListener getRepaintListener(final Canvas canvas) {	        
-	        return new ChangeListener(){
-						public void onChange(Object src) {
-	            canvas.repaint();
-            }	        	
-	        };
-        }
-
-				private MouseListener getMouseListener(Renderer renderer, Canvas canvas) {
-	        return new SimulatorMouseListener(renderer,canvas);
-        }	  	
+	    		Generator gen = new Generator(NODES, PORTS, 100 /* Obsolete MAX pos */);    		
+	    		Graph graph = gen.generate();	  
+	    		new Simulator(graph, true);	                
+	      }					
 	    });
     }
     catch (InvocationTargetException e) {
@@ -77,4 +70,16 @@ public class Simulator {
 	    e.printStackTrace();
     }
   }	
+	
+	private ChangeListener getRepaintListener(final Canvas canvas) {	        
+    return new ChangeListener(){
+			public void onChange(Object src) {
+        canvas.repaint();
+      }	        	
+    };
+  }
+
+	private MouseListener getMouseListener(Renderer renderer, Canvas canvas) {
+    return new SimulatorMouseListener(renderer,canvas);
+  }	  
 }

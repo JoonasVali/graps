@@ -14,16 +14,19 @@ import ee.joonasvali.graps.util.FlagManager;
 import ee.joonasvali.graps.util.GraphUtil;
 
 public class ForceLayout implements Layout{	
-	public final static String EXCLUDE = "forcelayout_exclude_node"; 
 	private LinkedList<PhysicalNode> nodes = new LinkedList<PhysicalNode>();	
 	private LinkedList<UpdateListener> listeners = new LinkedList<UpdateListener>();
-	private final static double STABLE = 30, DAMPING = 0.65, STRING_STRENGTH = 0.08, COLOUMB = 100, MASS_CONSTANT = 0.003d;
+	private final static double DAMPING = 0.65, STRING_STRENGTH = 0.08, COLOUMB = 100, MASS_CONSTANT = 0.003d;
 	private Executor executor = Executors.newSingleThreadExecutor();	
 	private boolean run;
 	private Point offset = new Point(0,0);
 	
 	public void addListener(UpdateListener listener){
 		listeners.add(listener);
+	}
+	
+	public void removeListener(UpdateListener listener){
+		listeners.remove(listener);
 	}
 	
 	public void execute(Graph graph){
@@ -41,10 +44,8 @@ public class ForceLayout implements Layout{
 	}
 	
 	private void place(){		
-		
-		Force kinetic;
-		do{			
-			kinetic = sumKinetic();
+				
+		do{					
 			for(PhysicalNode node: nodes){				
 				boolean exclude = FlagManager.getInstance(Node.class).get(node.getNode(), EXCLUDE);
 				if(exclude){
@@ -74,12 +75,7 @@ public class ForceLayout implements Layout{
 				node.setLocation(new Point(
 						(int)(node.getNode().getLocation().x + node.getVelocity().x + offset.x), 
 						(int)(node.getNode().getLocation().y + node.getVelocity().y + offset.y)	
-				));			
-							
-				kinetic.add(new Force(
-					node.getMass() * Math.pow(node.getVelocity().x, 2),
-					node.getMass() * Math.pow(node.getVelocity().y, 2)
-				));				
+				));																	
 			}			
 			
 			try{
@@ -92,7 +88,7 @@ public class ForceLayout implements Layout{
 			offset.x = -(minvals.x) + 20;
 			offset.y = -(minvals.y) + 20;				
 			notifyListeners();
-		} while(run && kinetic.getAbsolute() > STABLE);
+		} while(run);
 	}
 	
 	public Point getOffset(){
