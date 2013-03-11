@@ -1,11 +1,13 @@
 package ee.joonasvali.graps.util;
 
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 public class FlagManager<T> {
-	private static Map<Class<?>, FlagManager<?>> instances = new HashMap<Class<?>, FlagManager<?>>(); 
-	private Map<T, Flags> flags = new HashMap<T, Flags>();
+	private static Map<Class<?>, FlagManager<?>> instances = new IdentityHashMap<Class<?>, FlagManager<?>>(); 
+	private Map<T, Flags> flags = new WeakHashMap<T, Flags>();
 	
 	@SuppressWarnings("unchecked")
   public static <T> FlagManager<T> getInstance(Class<T> clazz){

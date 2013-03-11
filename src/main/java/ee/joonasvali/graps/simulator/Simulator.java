@@ -36,7 +36,10 @@ public class Simulator {
 		Renderer renderer = new SimpleRenderer();	        
     
 
-    Layout layout = new ForceLayout();	        
+		DummyNode.injectAll(graph);
+		DummyNode.injectAll(graph);
+		
+    Layout layout = new ForceLayout();    
     layout.execute(graph);	        
     
     
@@ -56,7 +59,7 @@ public class Simulator {
 	    SwingUtilities.invokeAndWait(new Runnable(){
 	    	public void run() {	    		
 	    		Generator gen = new Generator(NODES, PORTS, 100 /* Obsolete MAX pos */);    		
-	    		Graph graph = gen.generate();	  
+	    		Graph graph = gen.generate();	    			    		
 	    		new Simulator(graph, true);	                
 	      }					
 	    });

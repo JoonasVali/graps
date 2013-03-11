@@ -108,25 +108,13 @@ public class SimpleRenderer implements Renderer{
 	  g.drawRect(x, y, width, height);	 
   }
 
-	private void drawLines(Graphics2D g, Port p) {
-		Point breaking = 
-				new Point(
-						scaleX(p.getPort().getNode().getLocation().x + p.getPort().getLocation().x), 
-						scaleY(p.getNode().getLocation().y + p.getLocation().y) 
-				);
+	private void drawLines(Graphics2D g, Port p) {		
 		g.drawLine(
 				scaleX(p.getPort().getLocation().x + p.getPort().getNode().getLocation().x),
 				scaleY(p.getPort().getLocation().y + p.getPort().getNode().getLocation().y),
-				breaking.x,
-				breaking.y
-		);
-		
-		g.drawLine(
 				scaleX(p.getLocation().x + p.getNode().getLocation().x),
-	  		scaleY(p.getLocation().y + p.getNode().getLocation().y),
-				breaking.x,
-				breaking.y
-		);		
+	  		scaleY(p.getLocation().y + p.getNode().getLocation().y)
+		);				
   }
 
 	private void drawPorts(Graphics2D g, Node n, Port p) {
@@ -147,11 +135,11 @@ public class SimpleRenderer implements Renderer{
   }
 	
 	public int scaleX(int orig){
-	  return orig; /* REIMPLEMENT IF EVER NEEDED */
+	  return orig/2; /* REIMPLEMENT IF EVER NEEDED */
   }
 	
 	public int scaleY(int orig){
-		return orig; /* REIMPLEMENT IF EVER NEEDED */
+		return orig/2; /* REIMPLEMENT IF EVER NEEDED */
   }
 
 	private void notifyListeners(){
