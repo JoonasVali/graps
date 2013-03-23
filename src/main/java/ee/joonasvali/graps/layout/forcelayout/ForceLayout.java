@@ -22,6 +22,7 @@ public class ForceLayout implements Layout {
 	private boolean run;
 	private Point offset = new Point(0, 0);
 	private ForceLayoutConfiguration configuration;
+	private final LinkedList<Runnable> todo = new LinkedList<Runnable>();
 	
 	public ForceLayout(){
 		this.configuration = new ForceLayoutConfiguration();			
@@ -55,11 +56,17 @@ public class ForceLayout implements Layout {
 
 	private void place() {	
 		do {
-			while(configuration.pause()){
+			while(configuration.isPause()){
 				try {
-	        TimeUnit.MILLISECONDS.sleep(configuration.pauseReactionTime());
+	        TimeUnit.MILLISECONDS.sleep(configuration.getPauseReactionTime());
         }
         catch (InterruptedException ignore) { }
+			}
+			
+			synchronized(todo){
+				while(todo.size() > 0){
+					todo.removeFirst().run();
+				}
 			}
 			
 			double damping = configuration.getDamping();
@@ -103,7 +110,7 @@ public class ForceLayout implements Layout {
 				    .getLocation().y + node.getVelocity().y + offset.y)));
 			}
 			
-			int sleep = configuration.sleepTimeBetweenIterations();
+			int sleep = configuration.getSleepTimeBetweenIterations();
 			if(sleep > 0){				
 				try {
 	        TimeUnit.MILLISECONDS.sleep(sleep);
@@ -114,7 +121,7 @@ public class ForceLayout implements Layout {
         }				
 			}
 
-			int edgeMargins = configuration.edgeMargins();
+			int edgeMargins = configuration.getEdgeMargins();
 			Point minvals = GraphUtil.calculateMinPosition(nodes);
 			offset.x = -(minvals.x) + edgeMargins;
 			offset.y = -(minvals.y) + edgeMargins;
@@ -132,6 +139,21 @@ public class ForceLayout implements Layout {
 
 	public Point getOffset() {
 		return offset;
+	}
+	
+	/**
+	 * Add task to do before next iteration. For example renew configuration.
+	 * Thread safe.
+	 * @param runnable the task to be fulfilled by the looping thread.
+	 */
+	public void addBeforeNextIteration(Runnable runnable){
+		synchronized(todo){
+			todo.add(runnable);
+		}
+	}
+	
+	public ForceLayoutConfiguration getConfiguration(){
+		return configuration;
 	}
 
 	private void notifyListeners() {
