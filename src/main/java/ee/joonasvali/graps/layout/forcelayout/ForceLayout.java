@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import ee.joonasvali.graps.graph.Graph;
 import ee.joonasvali.graps.graph.Node;
@@ -16,13 +17,20 @@ import ee.joonasvali.graps.util.GraphUtil;
 
 public class ForceLayout implements Layout {
 	private LinkedList<PhysicalNode> nodes = new LinkedList<PhysicalNode>();
-	private LinkedList<UpdateListener> listeners = new LinkedList<UpdateListener>();
-	private final static double DAMPING = 0.65, STRING_STRENGTH = 0.15,
-	    COLOUMB = 100, MASS_CONSTANT = 0.003d;
+	private LinkedList<UpdateListener> listeners = new LinkedList<UpdateListener>();	
 	private Executor executor = Executors.newSingleThreadExecutor();
 	private boolean run;
 	private Point offset = new Point(0, 0);
-
+	private ForceLayoutConfiguration configuration;
+	
+	public ForceLayout(){
+		this.configuration = new ForceLayoutConfiguration();			
+	}
+	
+	public ForceLayout(ForceLayoutConfiguration configuration){
+		this.configuration = configuration;
+	}
+	
 	public void addListener(UpdateListener listener) {
 		listeners.add(listener);
 	}
@@ -45,9 +53,17 @@ public class ForceLayout implements Layout {
 		});
 	}
 
-	private void place() {
-		VirtualGravityCenter center = new VirtualGravityCenter();
+	private void place() {	
 		do {
+			while(configuration.pause()){
+				try {
+	        TimeUnit.MILLISECONDS.sleep(configuration.pauseReactionTime());
+        }
+        catch (InterruptedException ignore) { }
+			}
+			
+			double damping = configuration.getDamping();
+			
 			for (PhysicalNode node : nodes) {
 				boolean exclude = FlagManager.getInstance(Node.class).get(
 				    node.getNode(), EXCLUDE);
@@ -67,11 +83,14 @@ public class ForceLayout implements Layout {
 					netForce.add(hookeAttraction(node, other));
 				}
 				
-				netForce.add(hookeAttraction(node, center, 0.001));
+				if(configuration.centerForcePullStrength() > 0){
+					netForce.add(centerPullForce(node));
+				}
 				
-				node.getVelocity().x = (node.getVelocity().x + (netForce.x)) * DAMPING;
-				node.getVelocity().y = (node.getVelocity().y + (netForce.y)) * DAMPING;
+				node.getVelocity().x = (node.getVelocity().x + (netForce.x)) * damping;
+				node.getVelocity().y = (node.getVelocity().y + (netForce.y)) * damping;
 			}
+			
 			for (PhysicalNode node : nodes) {
 				boolean exclude = FlagManager.getInstance(Node.class).get(
 				    node.getNode(), EXCLUDE);
@@ -83,21 +102,33 @@ public class ForceLayout implements Layout {
 				    + node.getVelocity().x + offset.x), (int) (node.getNode()
 				    .getLocation().y + node.getVelocity().y + offset.y)));
 			}
-
-			try {
-				TimeUnit.MILLISECONDS.sleep(20);
+			
+			int sleep = configuration.sleepTimeBetweenIterations();
+			if(sleep > 0){				
+				try {
+	        TimeUnit.MILLISECONDS.sleep(sleep);
+        }
+        catch (InterruptedException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+        }				
 			}
-			catch (Exception e) {
-				System.err.println(e);
-			}
 
+			int edgeMargins = configuration.edgeMargins();
 			Point minvals = GraphUtil.calculateMinPosition(nodes);
-			offset.x = -(minvals.x) + 20;
-			offset.y = -(minvals.y) + 20;
+			offset.x = -(minvals.x) + edgeMargins;
+			offset.y = -(minvals.y) + edgeMargins;
 			notifyListeners();
 		}
 		while (run);
 	}
+
+	private Force centerPullForce(PhysicalNode node) {
+		double xdiff = node.getLocation().x - 200;
+		double ydiff = node.getLocation().y - 200;
+		double centerPull = configuration.centerForcePullStrength();
+	  return new Force(xdiff < 0 ? centerPull : -centerPull, ydiff < 0 ? centerPull : -centerPull);
+  }
 
 	public Point getOffset() {
 		return offset;
@@ -110,7 +141,7 @@ public class ForceLayout implements Layout {
 	}
 
 	private Force hookeAttraction(PhysicalNode node, Node other) {
-		return hookeAttraction(node, other, STRING_STRENGTH);
+		return hookeAttraction(node, other, configuration.getStringStrength());
 	}
 	
 	private Force hookeAttraction(PhysicalNode node, Node other, double strength) {
@@ -137,7 +168,9 @@ public class ForceLayout implements Layout {
 		    node.getNode());
 		double xdiff = edgePosNode.x - edgePosOther.x;
 		double ydiff = edgePosNode.y - edgePosOther.y;
-		if(xdiff > 200 || ydiff > 200){
+		
+		double coloumbMax = configuration.getCoulombForceMaxDistance();		
+		if(coloumbMax > 0 && (xdiff > coloumbMax || ydiff > coloumbMax)){
 			return new Force(0,0);
 		}
 		double sqrdistance = xdiff * xdiff + ydiff * ydiff;
@@ -146,28 +179,13 @@ public class ForceLayout implements Layout {
 		}
 
 		double massMultiplier = Math.max(node.getMass() * other.getMass()
-		    * MASS_CONSTANT, 1);
-		return new Force((massMultiplier * COLOUMB * (xdiff / sqrdistance)),
-		    (massMultiplier * COLOUMB * (ydiff / sqrdistance)));
+		    * configuration.getMassConstant(), 1);
+		double coulomb = configuration.getCoulombRepulseStrength();
+		return new Force((massMultiplier * coulomb * (xdiff / sqrdistance)),
+		    (massMultiplier * coulomb * (ydiff / sqrdistance)));
 	}
 
 	public void stop() {
 		run = false;
-	}
-
-	class VirtualGravityCenter extends PhysicalNode {
-
-		public VirtualGravityCenter() {
-			super(new Node(new Point(100, 100), new Point(1, 1)) {
-				@Override
-				public Point getLocation() {
-					return new Point(100, 100);
-				}
-			});
-		}
-		
-		public double getMass(){
-			return 200;
-		}
-	}
+	}	
 }

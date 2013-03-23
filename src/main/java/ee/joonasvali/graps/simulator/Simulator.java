@@ -36,8 +36,8 @@ public class Simulator {
 		Renderer renderer = new SimpleRenderer();	        
     
 
-		DummyNode.injectAll(graph);
-		DummyNode.injectAll(graph);
+		//DummyNode.injectAll(graph);
+		//DummyNode.injectAll(graph);
 		
     Layout layout = new ForceLayout();    
     layout.execute(graph);	        
