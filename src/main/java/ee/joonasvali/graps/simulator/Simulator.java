@@ -1,15 +1,24 @@
 package ee.joonasvali.graps.simulator;
 
+import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.lang.reflect.InvocationTargetException;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
+import ee.joonasvali.graps.edges.BreakpointManager;
 import ee.joonasvali.graps.generator.Generator;
 import ee.joonasvali.graps.graph.Graph;
 import ee.joonasvali.graps.layout.Layout;
@@ -19,10 +28,31 @@ import ee.joonasvali.graps.layout.forcelayout.UpdateListener;
 public class Simulator {	
 	private JFrame frame;	
 	private Dimension size = new Dimension(2000, 2000);
+	private JPanel mainPanel = new JPanel(new BorderLayout());
+	private JPanel controlPanel = new JPanel(new FlowLayout());
+	private JButton runButton = new JButton("run/pause");
+	private JButton addBreakpointsButton = new JButton("Add Breakpoints");
 	private JScrollPane scroll;
+	private ForceLayout layout;
+	private BreakpointManager bpManager;
 	
 	private static int NODES = 30;
-	private static int PORTS = 100;	
+	private static int PORTS = 100;
+	
+	private ActionListener runAction = new ActionListener() {			
+		public void actionPerformed(ActionEvent e) {				
+			bpManager.clearBreakpoints();
+			layout.getConfiguration().setPause(!layout.getConfiguration().isPause());
+			addBreakpointsButton.setEnabled(layout.getConfiguration().isPause());
+		}
+	};
+	
+	private ActionListener breakpointsAction = new ActionListener() {
+		public void actionPerformed(ActionEvent e) {
+	    bpManager.makeBreakPoints();	    
+    }		
+	};
+	
 	
 	public Simulator(Graph graph, boolean exitOnClose){
 		frame = new JFrame();		
@@ -35,11 +65,7 @@ public class Simulator {
 		
 		Renderer renderer = new SimpleRenderer();	        
     
-
-		//DummyNode.injectAll(graph);
-		//DummyNode.injectAll(graph);
-		
-    Layout layout = new ForceLayout();    
+    layout = new ForceLayout();    
     layout.execute(graph);	        
     
     
@@ -47,8 +73,22 @@ public class Simulator {
     MouseListener listener = getMouseListener(renderer, canvas);
     canvas.addMouseListener(listener);
     renderer.addListener(getRepaintListener(canvas));	        
-    this.scroll = new JScrollPane(canvas);
-    this.frame.add(this.scroll);
+    bpManager = new BreakpointManager(graph);
+    
+    this.scroll = new JScrollPane(canvas);    
+        
+    runButton.addActionListener(runAction);
+    addBreakpointsButton.addActionListener(breakpointsAction);
+    
+    controlPanel.add(runButton);    
+    controlPanel.add(addBreakpointsButton);
+    addBreakpointsButton.setEnabled(false);
+    
+    
+    mainPanel.add(this.controlPanel, BorderLayout.NORTH);
+    mainPanel.add(this.scroll, BorderLayout.CENTER);   
+    
+    this.frame.add(mainPanel);
     this.frame.setVisible(true);
 	}
 	
@@ -85,4 +125,6 @@ public class Simulator {
 	private MouseListener getMouseListener(Renderer renderer, Canvas canvas) {
     return new SimulatorMouseListener(renderer,canvas);
   }	  
+	
+	
 }

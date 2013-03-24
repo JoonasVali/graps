@@ -7,6 +7,7 @@ import java.awt.Point;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -63,14 +64,7 @@ public class SimpleRenderer implements Renderer{
 					scaleX(((Node)selected).getCenter().x),
 					scaleY(((Node)selected).getCenter().y)
 			);*/
-		}		
-		
-		
-		
-		
-		
-		
-		
+		}				
   }
 	
 	private void drawRelatives(Graphics2D g) {
@@ -108,13 +102,30 @@ public class SimpleRenderer implements Renderer{
 	  g.drawRect(x, y, width, height);	 
   }
 
-	private void drawLines(Graphics2D g, Port p) {		
-		g.drawLine(
-				scaleX(p.getPort().getLocation().x + p.getPort().getNode().getLocation().x),
-				scaleY(p.getPort().getLocation().y + p.getPort().getNode().getLocation().y),
-				scaleX(p.getLocation().x + p.getNode().getLocation().x),
-	  		scaleY(p.getLocation().y + p.getNode().getLocation().y)
-		);				
+	private void drawLines(Graphics2D g, Port p) {
+		List<Point> bp = p.getBreakpoints();
+		if(bp.isEmpty()){
+			bp = p.getPort().getBreakpoints();
+			p = p.getPort();
+		}
+		if(!bp.isEmpty()){
+			Point last = p.getPort().getAbsolutes();
+			for(Point point : bp){
+				g.drawLine(scaleX(last.x), scaleY(last.y), scaleX(point.x), scaleY(point.y));
+				last = point;
+			}
+			g.drawLine(scaleX(last.x), scaleY(last.y), 
+					scaleX(p.getAbsolutes().x), 
+					scaleY(p.getAbsolutes().y)
+		  );
+		}	else {
+			g.drawLine(
+					scaleX(p.getPort().getLocation().x + p.getPort().getNode().getLocation().x),
+					scaleY(p.getPort().getLocation().y + p.getPort().getNode().getLocation().y),
+					scaleX(p.getLocation().x + p.getNode().getLocation().x),
+		  		scaleY(p.getLocation().y + p.getNode().getLocation().y)
+			);				
+		}
   }
 
 	private void drawPorts(Graphics2D g, Node n, Port p) {
