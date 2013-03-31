@@ -24,6 +24,7 @@ public class Port {
 	
 	public void clearBreakpoints(){
 		breakpoints.clear();
+		if(port != null)
 		port.breakpoints.clear();
 	}
 	

@@ -1,6 +1,5 @@
 package ee.joonasvali.graps.edges;
 
-import java.awt.Point;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -9,10 +8,16 @@ import ee.joonasvali.graps.graph.Node;
 import ee.joonasvali.graps.graph.Port;
 
 public class BreakpointManager {
-	Graph graph;
+	private Graph graph;
+	private BreakpointPlacer placer;
 	
 	public BreakpointManager(Graph graph){
+		this(graph, new StandardPlacer());		
+	}
+	
+	public BreakpointManager(Graph graph, BreakpointPlacer placer){
 		this.graph = graph;
+		this.placer = placer;		
 	}
 	
 	public void makeBreakPoints(){		
@@ -23,7 +28,7 @@ public class BreakpointManager {
 					if(p.getPort() != null){
 						processed.add(p.getPort());
 						p.clearBreakpoints();						
-						makeBreakPoints(p);
+						placer.place(p);
 					}
 				}
 			}
@@ -38,17 +43,6 @@ public class BreakpointManager {
 		}
 	}
 
-	private void makeBreakPoints(Port p) {		
-		Point a = p.getAbsolutes();
-		Point b = p.getPort().getAbsolutes();
-		if(Math.abs(a.x - b.x) < Math.abs(a.y - b.y)){
-			p.addBreakpoint(new Point((a.x + b.x) / 2, b.y));
-			p.addBreakpoint(new Point((a.x + b.x) / 2, a.y));
-		} else {
-			p.addBreakpoint(new Point(b.x, (a.y + b.y) / 2));
-			p.addBreakpoint(new Point(a.x, (a.y + b.y) / 2));
-		}		
-			  
-  }
+	
 }
 
