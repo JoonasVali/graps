@@ -20,7 +20,15 @@ public class BreakpointManager {
 		this.placer = placer;		
 	}
 	
-	public void makeBreakPoints(){		
+	public void makeBreakPoints(){
+		//TESTING
+		try{
+			CollisionMap map = new CollisionMap(graph, graph.getNodes().getFirst().getPorts().get(0));			
+		} catch(Exception e){
+			e.printStackTrace();
+		}
+		
+		//TESTING//
 		Set<Port> processed = new HashSet<Port>();
 		for(Node node : graph.getNodes()){
 			for(Port p : node.getPorts()){
