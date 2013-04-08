@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
@@ -13,17 +11,16 @@ import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
 import ee.joonasvali.graps.edges.BreakpointManager;
+import ee.joonasvali.graps.edges.TurtlePathCalculator;
+import ee.joonasvali.graps.edges.TurtlePathCalculatorFactory;
 import ee.joonasvali.graps.generator.Generator;
 import ee.joonasvali.graps.graph.Graph;
-import ee.joonasvali.graps.layout.Layout;
 import ee.joonasvali.graps.layout.forcelayout.ForceLayout;
-import ee.joonasvali.graps.layout.forcelayout.UpdateListener;
 
 public class Simulator {	
 	private JFrame frame;	
@@ -73,7 +70,7 @@ public class Simulator {
     MouseListener listener = getMouseListener(renderer, canvas);
     canvas.addMouseListener(listener);
     renderer.addListener(getRepaintListener(canvas));	        
-    bpManager = new BreakpointManager(graph);
+    bpManager = new BreakpointManager(graph, new TurtlePathCalculatorFactory());
     
     this.scroll = new JScrollPane(canvas);    
         

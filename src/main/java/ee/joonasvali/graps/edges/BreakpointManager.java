@@ -11,8 +11,8 @@ public class BreakpointManager {
 	private Graph graph;
 	private BreakpointPlacer placer;
 	
-	public BreakpointManager(Graph graph){
-		this(graph, new StandardPlacer());		
+	public BreakpointManager(Graph graph, PathCalculatorFactory calculatorFactory){
+		this(graph, new StandardPlacer(graph, calculatorFactory));		
 	}
 	
 	public BreakpointManager(Graph graph, BreakpointPlacer placer){
@@ -21,14 +21,7 @@ public class BreakpointManager {
 	}
 	
 	public void makeBreakPoints(){
-		//TESTING
-		try{
-			CollisionMap map = new CollisionMap(graph, graph.getNodes().getFirst().getPorts().get(0));			
-		} catch(Exception e){
-			e.printStackTrace();
-		}
 		
-		//TESTING//
 		Set<Port> processed = new HashSet<Port>();
 		for(Node node : graph.getNodes()){
 			for(Port p : node.getPorts()){

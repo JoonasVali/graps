@@ -2,26 +2,34 @@ package ee.joonasvali.graps.edges;
 
 import java.awt.Point;
 
+import ee.joonasvali.graps.graph.Graph;
 import ee.joonasvali.graps.graph.Node;
 import ee.joonasvali.graps.graph.Port;
 
 public class StandardPlacer implements BreakpointPlacer{
 	private static final int OUT_MARGIN = 10;
+	private Graph graph;
+	private PathCalculatorFactory calculatorFactory;
 	
-	public void place(Port p) {
-		Point a = directOutOfArea(p, p.getAbsolutes());		
-		Point b = directOutOfArea(p.getPort(), p.getPort().getAbsolutes());
-		p.addBreakpoint(b);		
-		if(Math.abs(a.x - b.x) < Math.abs(a.y - b.y)){
-			p.addBreakpoint(new Point((a.x + b.x) / 2, b.y));
-			p.addBreakpoint(new Point((a.x + b.x) / 2, a.y));
-		} else {
-			p.addBreakpoint(new Point(b.x, (a.y + b.y) / 2));
-			p.addBreakpoint(new Point(a.x, (a.y + b.y) / 2));
+	public StandardPlacer(Graph graph, PathCalculatorFactory calculatorFactory){
+		this.graph = graph;
+		this.calculatorFactory = calculatorFactory;
+	}
+	
+	public void place(Port p) {				
+		Point a = directOutOfArea(p.getPort(), p.getPort().getAbsolutes());
+		Point b = directOutOfArea(p, p.getAbsolutes());
+				
+		try{
+			CollisionMap map = new CollisionMap(graph, p);
+			calculatorFactory.getPathCalculator().calculatePath(p, map, a, b, OUT_MARGIN);
+			p.addBreakpoint(a); // don't add if something fails			
+		} catch(Exception e){
+			e.printStackTrace();
+			return;
 		}		
-		
 		// This must be added as last breakpoint
-		p.addBreakpoint(a);	  
+		p.addBreakpoint(b);	  
   }
 
 	private Point directOutOfArea(Port p, Point absolutes) {
