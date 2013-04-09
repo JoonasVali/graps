@@ -2,10 +2,11 @@ package ee.joonasvali.graps.layout.forcelayout;
 
 import java.awt.Point;
 import java.util.LinkedList;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 import ee.joonasvali.graps.graph.Graph;
 import ee.joonasvali.graps.graph.Node;
@@ -23,6 +24,7 @@ public class ForceLayout implements Layout {
 	private Point offset = new Point(0, 0);
 	private ForceLayoutConfiguration configuration;
 	private final LinkedList<Runnable> todo = new LinkedList<Runnable>();
+	private ExecutorService workers = Executors.newCachedThreadPool();
 	
 	public ForceLayout(){
 		this.configuration = new ForceLayoutConfiguration();			
@@ -69,34 +71,49 @@ public class ForceLayout implements Layout {
 				}
 			}
 			
-			double damping = configuration.getDamping();
+			final double damping = configuration.getDamping();			
+			final CountDownLatch latch = new CountDownLatch(nodes.size());			
 			
-			for (PhysicalNode node : nodes) {
-				boolean exclude = FlagManager.getInstance(Node.class).get(
-				    node.getNode(), EXCLUDE);
+			for (final PhysicalNode node : nodes) {
+				boolean exclude = FlagManager.getInstance(Node.class).get(node.getNode(), EXCLUDE);
 				if (exclude) {
 					continue;
-				}
-
-				Force netForce = new Force();
-				for (PhysicalNode other : nodes) {
-					
-					if (!DummyNode.isDummyNode(other.getNode()) && !node.equals(other)) {
-						netForce.add(coulombRepulsion(node, other));
+				}				
+				
+				workers.execute(
+					new Runnable(){
+						public void run() {
+							Force netForce = new Force();
+							for (PhysicalNode other : nodes) {
+								
+								if (!DummyNode.isDummyNode(other.getNode()) && !node.equals(other)) {
+									netForce.add(coulombRepulsion(node, other));
+								}
+							}
+	
+							for (Node other : node.getForeignNodes()) {
+								netForce.add(hookeAttraction(node, other));
+							}
+							
+							if(configuration.centerForcePullStrength() > 0){
+								netForce.add(centerPullForce(node));
+							}
+							
+							node.getVelocity().x = (node.getVelocity().x + (netForce.x)) * damping;
+							node.getVelocity().y = (node.getVelocity().y + (netForce.y)) * damping;
+							latch.countDown();
+	          }					
 					}
-				}
-
-				for (Node other : node.getForeignNodes()) {
-					netForce.add(hookeAttraction(node, other));
-				}
-				
-				if(configuration.centerForcePullStrength() > 0){
-					netForce.add(centerPullForce(node));
-				}
-				
-				node.getVelocity().x = (node.getVelocity().x + (netForce.x)) * damping;
-				node.getVelocity().y = (node.getVelocity().y + (netForce.y)) * damping;
+				);
 			}
+			
+			try {
+	      latch.await();
+      }
+      catch (InterruptedException e1) {      	
+	      e1.printStackTrace();
+	      System.exit(1);
+      }
 			
 			for (PhysicalNode node : nodes) {
 				boolean exclude = FlagManager.getInstance(Node.class).get(
