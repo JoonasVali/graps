@@ -22,8 +22,8 @@ public class StandardPlacer implements BreakpointPlacer{
 				
 		try{
 			CollisionMap map = new CollisionMap(graph, p);
-			calculatorFactory.getPathCalculator().calculatePath(p, map, a, b, OUT_MARGIN);
-			p.addBreakpoint(a); // don't add if something fails			
+			p.addBreakpoint(a); 
+			calculatorFactory.getPathCalculator(p, map, a, b, OUT_MARGIN).calculatePath();			
 		} catch(Exception e){
 			e.printStackTrace();
 			return;
