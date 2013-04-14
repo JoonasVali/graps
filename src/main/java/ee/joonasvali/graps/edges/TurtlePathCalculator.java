@@ -34,7 +34,15 @@ public class TurtlePathCalculator extends PathCalculator {
 	
 	@Override
   void calculatePath() {
-		checkAndCreateDirectRoute(start, end);
+		boolean success = checkAndCreateDirectRoute(start, end);
+		if(!success){			
+			Point midPoint = new Point((start.x + end.x) / 2, (start.y + end.y) / 2);
+			success = checkAndCreateDirectRoute(start, midPoint);
+			if(success){
+				success = checkAndCreateDirectRoute(midPoint, end);
+				return;
+			}			
+		}
 	}
 	
 	public boolean checkAndCreateDirectRoute(Point a, Point b){
@@ -45,14 +53,14 @@ public class TurtlePathCalculator extends PathCalculator {
 			}
 		}
 		{
-			boolean direct = hasDirectRouteLine(a, new Point(a.x, b.y));
+			boolean direct = hasDirectRouteLine(a, new Point(a.x, b.y)) && hasDirectRouteLine(b, new Point(a.x, b.y));
 			if(direct){
 				port.addBreakpoint(new Point(a.x, b.y));
 				return true;
 			}
 		}
 		{
-			boolean direct = hasDirectRouteLine(a, new Point(b.x, a.y));
+			boolean direct = hasDirectRouteLine(a, new Point(b.x, a.y)) && hasDirectRouteLine(b, new Point(b.x, a.y));
 			if(direct){
 				port.addBreakpoint(new Point(b.x, a.y));
 				return true;

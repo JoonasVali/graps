@@ -42,15 +42,13 @@ public class CollisionMap {
 	  ymax = (a.getLocation().y + a.getHeight() > b.getLocation().y + b.getHeight() ? a.getLocation().y + a.getHeight() : b.getLocation().y + b.getHeight()) + MARGIN;
 	  xmin = (a.getLocation().x < b.getLocation().x ? a.getLocation().x : b.getLocation().x) - MARGIN;
 	  ymin = (a.getLocation().y < b.getLocation().y ? a.getLocation().y : b.getLocation().y) - MARGIN;
-	  map = new boolean[xmax - xmin][ymax - ymin];
-	  System.out.println("MAP "+(xmax- xmin)+" "+(ymax - ymin));
-	  System.out.println(xmax + " " +ymax + " " + xmin + " " +ymin );
+	  map = new boolean[xmax - xmin][ymax - ymin];	  
 	  
 	  for(Node node: graph.getNodes()){
 	  	if(contains(node)){
 	  		renderToMap(node);
 	  	}
-	  }
+	  }	  
   }	
 	
 	private void renderToMap(Node node) {
