@@ -8,6 +8,7 @@ import ee.joonasvali.graps.graph.Port;
 
 public class CollisionMap {
 	private final static int MARGIN = 30;
+	private final static int NODE_MARGIN = 5;
 	private Graph graph;	
 	private Node a,b ;
 	
@@ -53,8 +54,8 @@ public class CollisionMap {
 	
 	private void renderToMap(Node node) {
 		Point location = translateToLocal(node.getLocation());		
-	  for(int i = location.x ; i < location.x + node.getWidth() ; i++){
-	  	for(int j = location.y; j < location.y + node.getHeight(); j++){
+	  for(int i = location.x-NODE_MARGIN ; i < location.x + node.getWidth() + NODE_MARGIN ; i++){
+	  	for(int j = location.y-NODE_MARGIN; j < location.y + node.getHeight() + NODE_MARGIN ; j++){
 	  		if(i < 0 || i >= map.length || j < 0 || j >= map[0].length) continue;
 	  		map[i][j] = true;
 	  	}
@@ -93,7 +94,11 @@ public class CollisionMap {
 		return isOccupied(p.x, p.y);
 	}
 	
-	public boolean isOccupied(int x, int y){
-		return map[x - xmin][y - ymin];
+	public boolean isOccupied(int x, int y){		
+		return map[x - xmin][y - ymin];		
+	}
+	@Override
+	public String toString() {	  
+	  return "MAP "+xmin+" "+ymin+" "+xmax+" "+ymax;
 	}
 }

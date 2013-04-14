@@ -16,7 +16,7 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 
 import ee.joonasvali.graps.edges.BreakpointManager;
-import ee.joonasvali.graps.edges.TurtlePathCalculator;
+import ee.joonasvali.graps.edges.CornerPathCalculator;
 import ee.joonasvali.graps.generator.Generator;
 import ee.joonasvali.graps.graph.Graph;
 import ee.joonasvali.graps.layout.forcelayout.ForceLayout;
@@ -69,7 +69,7 @@ public class Simulator {
     MouseListener listener = getMouseListener(renderer, canvas);
     canvas.addMouseListener(listener);
     renderer.addListener(getRepaintListener(canvas));	        
-    bpManager = new BreakpointManager(graph, TurtlePathCalculator.getFactory());
+    bpManager = new BreakpointManager(graph, CornerPathCalculator.getFactory());
     
     this.scroll = new JScrollPane(canvas);    
         
