@@ -41,19 +41,18 @@ public class CornerPathCalculator extends PathCalculator {
 			Point midPoint = new Point((start.x + end.x) / 2, (start.y + end.y) / 2);
 			boolean success = calculatePathWithMiddlePoint(midPoint);
 			if(!success){
-				int xVal = Math.max(1, Math.abs(start.x - end.x) / SEARCH_DENSITY);
-				int yVal = Math.max(1, Math.abs(start.y - end.y) / SEARCH_DENSITY);				
-				int startx = Math.min(start.x, end.x);
-				int starty = Math.min(start.y, end.y);
-				int endx = Math.max(start.x, end.x);
-				int endy = Math.max(start.y, end.y);
+				int xVal = Math.max(1, Math.abs(map.getXmin() - map.getXmax()) / SEARCH_DENSITY);
+				int yVal = Math.max(1, Math.abs(map.getYmin() - map.getYmax()) / SEARCH_DENSITY);				
+				int startx = Math.min(map.getXmin(), map.getXmax());
+				int starty = Math.min(map.getYmin(), map.getYmax());
+				int endx = Math.max(map.getXmin(), map.getXmax());
+				int endy = Math.max(map.getYmin(), map.getYmax());
 				
 				for(int i = startx; i <= endx; i+=xVal){
 					for(int j = starty; j <= endy; j+=yVal){						
 						midPoint = new Point(i, j);						
 						success = calculatePathWithMiddlePoint(midPoint);
-						if(success){
-							System.out.println("success "+midPoint);
+						if(success){							
 							return;
 						}
 					}

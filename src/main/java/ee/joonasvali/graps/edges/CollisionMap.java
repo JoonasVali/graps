@@ -14,7 +14,7 @@ public class CollisionMap {
 	
 	private int xmin, ymin, xmax, ymax;
 	private boolean[][] map;
-	
+		
 	/**
 	 * 
 	 * @param graph The full graph
@@ -101,4 +101,22 @@ public class CollisionMap {
 	public String toString() {	  
 	  return "MAP "+xmin+" "+ymin+" "+xmax+" "+ymax;
 	}
+
+	public int getXmin() {
+  	return xmin;
+  }
+
+	public int getYmin() {
+  	return ymin;
+  }
+
+	public int getXmax() {
+  	return xmax;
+  }
+	
+	public int getYmax() {
+  	return ymax;
+  }
+
+	
 }
