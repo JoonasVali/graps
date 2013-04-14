@@ -17,8 +17,7 @@ public class TurtlePathCalculator extends PathCalculator {
 		}
 		return factory;
 	}
-	
-	private Direction lastDirection = null; 
+		
 	private Port port;
 	private CollisionMap map;
 	private Point start;

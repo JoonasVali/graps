@@ -77,7 +77,8 @@ public class ForceLayout implements Layout {
 			for (final PhysicalNode node : nodes) {
 				boolean exclude = FlagManager.getInstance(Node.class).get(node.getNode(), EXCLUDE);
 				if (exclude) {
-					continue;
+					latch.countDown();
+					continue;					
 				}				
 				
 				workers.execute(
