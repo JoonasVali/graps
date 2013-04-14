@@ -121,8 +121,12 @@ public class CornerPathCalculator extends PathCalculator {
 			int min = Math.min(a.y, b.y);
 			int max = Math.max(a.y, b.y);
 			for(int i = min; i < max; i++){
-				if(map.isOccupied(a.x, i)){
-					return false;
+				try{
+					if(map.isOccupied(a.x, i)){
+						return false;
+					}
+				} catch(ArrayIndexOutOfBoundsException e){
+					return false; 
 				}
 			}	
 			return true;
@@ -131,8 +135,12 @@ public class CornerPathCalculator extends PathCalculator {
 			int min = Math.min(a.x, b.x);
 			int max = Math.max(a.x, b.x);
 			for(int i = min; i < max; i++){
-				if(map.isOccupied(i, a.y)){
-					return false;
+				try{
+					if(map.isOccupied(i, a.y)){
+						return false;
+					}
+				} catch(ArrayIndexOutOfBoundsException e){
+					return false; 
 				}
 			}	
 			return true;
