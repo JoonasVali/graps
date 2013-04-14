@@ -32,22 +32,28 @@ public class StandardPlacer implements BreakpointPlacer{
 		p.addBreakpoint(b);	  
   }
 
-	private Point directOutOfArea(Port p, Point absolutes) {
+	public static Point directOutOfArea(Port p, Point absolutes) {
 		boolean isRight = false;
 	  boolean isDown = false;
 	  Node node = p.getNode();
+	  int comparatorX, comparatorY;
+	  
 	  if(absolutes.x - node.getLocation().x > node.getLocation().x + node.getWidth() - absolutes.x){	  	
 	  	isRight = true;
-	  }
-	  int comparatorX = Math.abs(absolutes.x - node.getLocation().x - (node.getLocation().x + node.getWidth() - absolutes.x));
-	  
+	  	comparatorX = (node.getLocation().x + node.getWidth()) - absolutes.x;
+	  } else {
+	  	comparatorX = absolutes.x - node.getLocation().x;
+	  }  
+	    
 	  if(absolutes.y - node.getLocation().y > node.getLocation().y + node.getHeight() - absolutes.y){
 	  	isDown = true;
-	  }
-	  int comparatorY = Math.abs(absolutes.y - node.getLocation().y - (node.getLocation().y + node.getHeight() - absolutes.y));
+	  	comparatorY = (node.getLocation().y + node.getHeight()) - absolutes.y;
+	  } else {
+	  	comparatorY = absolutes.y - node.getLocation().y;
+	  }  
 	  
 	  Point out = new Point(absolutes);
-	  if(comparatorX > comparatorY){
+	  if(comparatorX < comparatorY){
 		  if(isRight){
 		  	out.x = absolutes.x + (node.getLocation().x + node.getWidth() - absolutes.x) + OUT_MARGIN;
 		  } else {
