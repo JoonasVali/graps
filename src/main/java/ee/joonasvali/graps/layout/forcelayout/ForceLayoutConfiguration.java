@@ -6,10 +6,10 @@ public class ForceLayoutConfiguration {
 	private volatile double massConstant = 0.003;
 	private volatile double damping = 0.65; 
 	private volatile double repulse = 100;
-	private volatile int repulseMaxDistance = 2000;
+	private volatile int repulseMaxDistance = 0;
 	private volatile boolean pause = false;
 	private volatile int pauseReaction = 20;
-	private volatile double centerStrength = 1.4;
+	private volatile double centerStrength = 0;
 	private volatile int sleepTime = 20;
 	private volatile int edgeMargins = 20;
 	

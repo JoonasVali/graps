@@ -10,6 +10,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import ee.joonasvali.graps.graph.Graph;
 import ee.joonasvali.graps.graph.Node;
@@ -61,6 +62,7 @@ public class ForceLayout implements Layout {
 	private void place() {	
 		LinkedList<PhysicalNode> validNodes = new LinkedList<PhysicalNode>();
 		Map<PhysicalNode, NodeTask> runnables = new HashMap<PhysicalNode, NodeTask>();
+		double volatility = 0;
 		
 		for(PhysicalNode n : nodes){
 			boolean exclude = FlagManager.getInstance(Node.class).get(n.getNode(), EXCLUDE);
@@ -109,7 +111,8 @@ public class ForceLayout implements Layout {
 				if (exclude) {
 					continue;
 				}
-
+				
+				volatility += (node.getVelocity().getAbsolute());
 				node.setLocation(new Point((int) (node.getNode().getLocation().x
 				    + node.getVelocity().x + offset.x), (int) (node.getNode()
 				    .getLocation().y + node.getVelocity().y + offset.y)));
@@ -130,7 +133,8 @@ public class ForceLayout implements Layout {
 			Point minvals = GraphUtil.calculateMinPosition(nodes);
 			offset.x = -(minvals.x) + edgeMargins;
 			offset.y = -(minvals.y) + edgeMargins;
-			notifyListeners();
+			notifyListeners(volatility);
+			volatility = 0;			
 		}
 		while (run);
 	}
@@ -156,9 +160,9 @@ public class ForceLayout implements Layout {
 		return configuration;
 	}
 
-	private void notifyListeners() {
+	private void notifyListeners(double volatility) {
 		for (UpdateListener l : listeners) {
-			l.update();
+			l.update(volatility);
 		}
 	}
 
@@ -166,6 +170,7 @@ public class ForceLayout implements Layout {
 		run = false;
 	}	
 }
+
 class NodeTask implements Runnable{	
 	private Collection<PhysicalNode> nodes;
 	private PhysicalNode node;
@@ -259,5 +264,6 @@ class NodeTask implements Runnable{
 		double ydiff = node.getLocation().y - 200;
 		double centerPull = configuration.centerForcePullStrength();
 	  return new Force(xdiff < 0 ? centerPull : -centerPull, ydiff < 0 ? centerPull : -centerPull);
-  }
+  }	
 }
+
