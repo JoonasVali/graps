@@ -10,7 +10,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 import ee.joonasvali.graps.graph.Graph;
 import ee.joonasvali.graps.graph.Node;
@@ -69,6 +68,10 @@ public class ForceLayout implements Layout {
 			if (!exclude) {				
 				validNodes.add(n);					
 			}
+		}
+		
+		if(configuration.isRandomizeGraph()){
+			placeRandomly(validNodes);
 		}
 		
 		do {			
@@ -139,7 +142,13 @@ public class ForceLayout implements Layout {
 		while (run);
 	}
 
-	
+	private void placeRandomly(LinkedList<PhysicalNode> validNodes) {
+		int x, y;
+		x = y = validNodes.size() * 20;
+	  for(PhysicalNode node : validNodes){
+	  	node.setLocation(new Point((int)(Math.random()*x), (int)(Math.random()*y)));
+	  }	  
+  }
 
 	public Point getOffset() {
 		return offset;

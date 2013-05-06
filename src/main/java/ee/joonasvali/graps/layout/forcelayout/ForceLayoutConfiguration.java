@@ -12,6 +12,7 @@ public class ForceLayoutConfiguration {
 	private volatile double centerStrength = 0;
 	private volatile int sleepTime = 20;
 	private volatile int edgeMargins = 20;
+	private boolean randomizeGraph = false;
 	
 
 	/**
@@ -136,4 +137,14 @@ public class ForceLayoutConfiguration {
 	public void setEdgeMargins(int margins){
 		this.edgeMargins = margins;
 	}
+
+	public boolean isRandomizeGraph() {
+  	return randomizeGraph;
+  }
+
+	public void setRandomizeGraph(boolean randomizeGraph) {
+  	this.randomizeGraph = randomizeGraph;
+  }
+	
+	
 }
