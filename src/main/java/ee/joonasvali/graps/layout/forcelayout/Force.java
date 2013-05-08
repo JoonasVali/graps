@@ -1,8 +1,8 @@
 package ee.joonasvali.graps.layout.forcelayout;
 
 public class Force {
-	public double x;
-	public double y;
+	public volatile double x;
+	public volatile double y;
 	
 	public Force(double x, double y){
 		this.x = x;

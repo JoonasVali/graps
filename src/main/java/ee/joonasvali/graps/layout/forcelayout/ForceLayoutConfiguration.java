@@ -9,7 +9,7 @@ public class ForceLayoutConfiguration {
 	private volatile int repulseMaxDistance = 0;
 	private volatile boolean pause = false;
 	private volatile int pauseReaction = 20;
-	private volatile double centerStrength = 0;
+	private volatile double centerStrength = 0.005;
 	private volatile int sleepTime = 20;
 	private volatile int edgeMargins = 20;
 	private boolean randomizeGraph = false;
@@ -105,7 +105,7 @@ public class ForceLayoutConfiguration {
 	 * Use 0 or less to disable.
 	 * @return
 	 */
-	public double centerForcePullStrength(){
+	public double getCenterForcePullStrength(){
 		return centerStrength;
 	}
 	

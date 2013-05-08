@@ -3,6 +3,7 @@ package ee.joonasvali.graps.layout.forcelayout;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,7 +12,7 @@ import ee.joonasvali.graps.graph.Node;
 import ee.joonasvali.graps.graph.Port;
 
 public class PhysicalNode implements Clickable{
-	private Force velocity = new Force(0,0);
+	protected Force velocity = new Force(0,0);
 	private Node node;
 	private double mass;
 	private Collection<Node> foreignNodes;
@@ -27,7 +28,8 @@ public class PhysicalNode implements Clickable{
   }
 
 	public void setVelocity(Force velocity) {
-  	this.velocity = velocity;
+  	this.velocity.x = velocity.x;
+  	this.velocity.y = velocity.y;
   }
 
 	public Node getNode() {
@@ -35,6 +37,8 @@ public class PhysicalNode implements Clickable{
   }
 	
 	public Collection<Node> getForeignNodes(){
+		if(foreignNodes.isEmpty()) 
+			return Collections.emptyList();
 		return new ArrayList<Node>(foreignNodes);
 	}
 	

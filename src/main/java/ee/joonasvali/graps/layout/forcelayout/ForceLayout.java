@@ -59,8 +59,10 @@ public class ForceLayout implements Layout {
 	}
 
 	private void place() {	
-		LinkedList<PhysicalNode> validNodes = new LinkedList<PhysicalNode>();
+		LinkedList<PhysicalNode> validNodes = new LinkedList<PhysicalNode>();		
 		Map<PhysicalNode, NodeTask> runnables = new HashMap<PhysicalNode, NodeTask>();
+		CentralNode center = new CentralNode();
+		
 		double volatility = 0;
 		
 		for(PhysicalNode n : nodes){
@@ -93,7 +95,7 @@ public class ForceLayout implements Layout {
 			for (final PhysicalNode node : validNodes) {
 				NodeTask task = runnables.get(node);
 				if(task == null){
-					task = new NodeTask(configuration, node, nodes); 
+					task = new NodeTask(configuration, node, nodes, center); 
 					runnables.put(node, task);
 				}
 				task.setLatch(latch);
@@ -116,10 +118,15 @@ public class ForceLayout implements Layout {
 				}
 				
 				volatility += (node.getVelocity().getAbsolute());
-				node.setLocation(new Point((int) (node.getNode().getLocation().x
-				    + node.getVelocity().x + offset.x), (int) (node.getNode()
-				    .getLocation().y + node.getVelocity().y + offset.y)));
+				setNewLocation(node);				
 			}
+			
+			
+			double damping = 0.05;
+			center.getVelocity().x = (center.getVelocity().x + (center.getForce().x)) * damping;
+			center.getVelocity().y = (center.getVelocity().y + (center.getForce().y)) * damping;			
+			center.reset();			
+			setNewLocation(center);		
 			
 			int sleep = configuration.getSleepTimeBetweenIterations();
 			if(sleep > 0){				
@@ -132,7 +139,7 @@ public class ForceLayout implements Layout {
         }				
 			}
 
-			int edgeMargins = configuration.getEdgeMargins();
+			int edgeMargins = configuration.getEdgeMargins();			
 			Point minvals = GraphUtil.calculateMinPosition(nodes);
 			offset.x = -(minvals.x) + edgeMargins;
 			offset.y = -(minvals.y) + edgeMargins;
@@ -142,6 +149,12 @@ public class ForceLayout implements Layout {
 		while (run);
 	}
 
+	private void setNewLocation(PhysicalNode node){
+		node.setLocation(new Point((int) (node.getNode().getLocation().x
+		    + node.getVelocity().x + offset.x), (int) (node.getNode()
+		    .getLocation().y + node.getVelocity().y + offset.y)));		
+	}
+	
 	private void placeRandomly(LinkedList<PhysicalNode> validNodes) {
 		int x, y;
 		x = y = validNodes.size() * 20;
@@ -180,16 +193,19 @@ public class ForceLayout implements Layout {
 	}	
 }
 
+
 class NodeTask implements Runnable{	
 	private Collection<PhysicalNode> nodes;
 	private PhysicalNode node;
 	private ForceLayoutConfiguration configuration;
 	private CountDownLatch latch;
+	private CentralNode center;
 	
-	public NodeTask(ForceLayoutConfiguration conf, PhysicalNode node, Collection<PhysicalNode> allNodes){
+	public NodeTask(ForceLayoutConfiguration conf, PhysicalNode node, Collection<PhysicalNode> allNodes, CentralNode center){
 		this.nodes = allNodes;
 		this.node = node;
 		this.configuration = conf;
+		this.center = center;
 	}
 	
 	public void setLatch(CountDownLatch latch){
@@ -213,8 +229,9 @@ class NodeTask implements Runnable{
 				netForce.add(hookeAttraction(node, other));
 			}
 			
-			if(configuration.centerForcePullStrength() > 0){
-				netForce.add(centerPullForce(node));
+			if(configuration.getCenterForcePullStrength() > 0){
+				netForce.add(hookeAttraction(node, center));
+				center.addForce(hookeAttraction(center, node));				
 			}
 			
 			node.getVelocity().x = (node.getVelocity().x + (netForce.x)) * damping;
@@ -266,13 +283,36 @@ class NodeTask implements Runnable{
 		double coulomb = configuration.getCoulombRepulseStrength();
 		return new Force((massMultiplier * coulomb * (xdiff / sqrdistance)),
 		    (massMultiplier * coulomb * (ydiff / sqrdistance)));
+	}	
+}
+
+class CentralNode extends PhysicalNode{
+	private Force force = new Force();
+	
+	public CentralNode(){
+		super(new Node(new Point(), new Point(1,1)));		
 	}
 	
-	private Force centerPullForce(PhysicalNode node) {
-		double xdiff = node.getLocation().x - 200;
-		double ydiff = node.getLocation().y - 200;
-		double centerPull = configuration.centerForcePullStrength();
-	  return new Force(xdiff < 0 ? centerPull : -centerPull, ydiff < 0 ? centerPull : -centerPull);
-  }	
+	@Override
+	public double getMass(){
+		return 50;
+	}
+	@Override
+	public synchronized void setVelocity(Force velocity){		
+		this.velocity.x = Math.min(300, this.velocity.x + velocity.x);
+		this.velocity.y = Math.min(300, this.velocity.y + velocity.y);
+	}
+	
+	public synchronized void addForce(Force force){
+		this.force.add(force);
+	}
+	
+	public synchronized void reset(){
+		this.force.x = this.force.y = 0;
+	}
+	
+	public synchronized Force getForce(){
+		return force;
+	}
 }
 
