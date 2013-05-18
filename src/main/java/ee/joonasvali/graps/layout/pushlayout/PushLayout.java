@@ -6,6 +6,7 @@ import java.util.Map;
 import ee.joonasvali.graps.graph.Graph;
 import ee.joonasvali.graps.graph.Node;
 import ee.joonasvali.graps.layout.Layout;
+import ee.joonasvali.graps.layout.LayoutConfiguration;
 import ee.joonasvali.graps.layout.forcelayout.UpdateListener;
 
 public class PushLayout implements Layout{
@@ -45,5 +46,10 @@ public class PushLayout implements Layout{
 	public void removeListener(UpdateListener listener) {
 	  // TODO Auto-generated method stub
 	  
+  }
+
+	public LayoutConfiguration getConfiguration() {
+	  // TODO Auto-generated method stub
+	  return null;
   }
 }

@@ -9,4 +9,5 @@ public interface Layout {
 	public void stop();
 	public void addListener(UpdateListener listener);
 	public void removeListener(UpdateListener listener);
+	public LayoutConfiguration getConfiguration();
 }

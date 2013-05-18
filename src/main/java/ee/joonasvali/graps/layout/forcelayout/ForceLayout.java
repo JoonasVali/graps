@@ -14,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 import ee.joonasvali.graps.graph.Graph;
 import ee.joonasvali.graps.graph.Node;
 import ee.joonasvali.graps.layout.Layout;
+import ee.joonasvali.graps.layout.LayoutConfiguration;
 import ee.joonasvali.graps.util.ClickableEdgeUtil;
 import ee.joonasvali.graps.util.FlagManager;
 import ee.joonasvali.graps.util.GraphUtil;
@@ -178,7 +179,7 @@ public class ForceLayout implements Layout {
 		}
 	}
 	
-	public ForceLayoutConfiguration getConfiguration(){
+	public LayoutConfiguration getConfiguration(){
 		return configuration;
 	}
 
@@ -190,7 +191,7 @@ public class ForceLayout implements Layout {
 
 	public void stop() {
 		run = false;
-	}	
+	}
 }
 
 
@@ -235,7 +236,7 @@ class NodeTask implements Runnable{
 			}
 			
 			node.getVelocity().x = (node.getVelocity().x + (netForce.x)) * damping;
-			node.getVelocity().y = (node.getVelocity().y + (netForce.y)) * damping;
+			node.getVelocity().y = (node.getVelocity().y + (netForce.y)) * damping;			
 			latch.countDown();
 		}
   }

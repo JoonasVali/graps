@@ -21,6 +21,7 @@ import ee.joonasvali.graps.edges.TurtlePathCalculator;
 import ee.joonasvali.graps.generator.Generator;
 import ee.joonasvali.graps.graph.Graph;
 import ee.joonasvali.graps.layout.forcelayout.ForceLayout;
+import ee.joonasvali.graps.layout.forcelayout.ForceLayoutConfiguration;
 
 public class Simulator {	
 	private JFrame frame;	
@@ -39,8 +40,9 @@ public class Simulator {
 	private ActionListener runAction = new ActionListener() {			
 		public void actionPerformed(ActionEvent e) {				
 			bpManager.clearBreakpoints();
-			layout.getConfiguration().setPause(!layout.getConfiguration().isPause());
-			addBreakpointsButton.setEnabled(layout.getConfiguration().isPause());
+			boolean pause = layout.getConfiguration().getValue(ForceLayoutConfiguration.PAUSE); 
+			layout.getConfiguration().setValue(ForceLayoutConfiguration.PAUSE, !pause);
+			addBreakpointsButton.setEnabled(layout.getConfiguration().<Boolean>getValue(ForceLayoutConfiguration.PAUSE));
 		}
 	};
 	

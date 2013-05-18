@@ -1,30 +1,56 @@
 package ee.joonasvali.graps.layout.forcelayout;
 
-public class ForceLayoutConfiguration {
-	
-	private volatile double stringStrength = 0.01;
-	private volatile double massConstant = 0.003;
-	private volatile double damping = 0.65; 
-	private volatile double repulse = 100;
-	private volatile int repulseMaxDistance = 0;
-	private volatile boolean pause = false;
-	private volatile int pauseReaction = 20;
-	private volatile double centerStrength = 0.005;
-	private volatile int sleepTime = 20;
-	private volatile int edgeMargins = 20;
-	private boolean randomizeGraph = false;
-	
+import ee.joonasvali.graps.layout.LayoutConfiguration;
 
+public class ForceLayoutConfiguration extends LayoutConfiguration{
+	
+	public static String STRING_STRENGTH = "string.strength";
+	public static String MASS_CONSTANT = "mass.const";
+	public static String DAMPING = "damping";
+	public static String REPULSE = "repulse";
+	public static String REPULSE_MAX_DISTANT = "repulse.max.distant";
+	public static String PAUSE = "pause";
+	public static String PAUSE_REACTION = "pause.reaction";
+	public static String CENTER_STRENGTH= "center.strength";
+	public static String SLEEP_TIME = "sleep.time";
+	public static String EDGE_MARGINS = "edge.margins";
+	public static String RANDOMIZE_GRAPH = "randomize.graph";
+	
+	private final double stringStrength = 0.01;
+	private final double massConstant = 0.003;
+	private final double damping = 0.65; 
+	private final double repulse = 100;
+	private final int repulseMaxDistance = 0;
+	private final boolean pause = false;
+	private final int pauseReaction = 20;
+	private final double centerStrength = 0.005;
+	private final int sleepTime = 20;
+	private final int edgeMargins = 20;
+	private final boolean randomizeGraph = false;
+	
+	public ForceLayoutConfiguration() {
+		setValue(STRING_STRENGTH, stringStrength);
+		setValue(MASS_CONSTANT, massConstant);
+		setValue(DAMPING, damping);
+		setValue(REPULSE, repulse);
+		setValue(REPULSE_MAX_DISTANT, repulseMaxDistance);
+		setValue(PAUSE, pause);
+		setValue(PAUSE_REACTION, pauseReaction);
+		setValue(CENTER_STRENGTH, centerStrength);
+		setValue(SLEEP_TIME, sleepTime);
+		setValue(EDGE_MARGINS, edgeMargins);
+		setValue(RANDOMIZE_GRAPH, randomizeGraph);
+	}
 	/**
 	 * String strengths between nodes.
 	 * @return
 	 */
 	public double getStringStrength() {				
-		return stringStrength;
+		return getValue(STRING_STRENGTH);
 	}	
 
 	public void setStringStrength(double str){
-		this.stringStrength = str;
+		setValue(STRING_STRENGTH, str);
 	}
 	
 	/**
@@ -32,11 +58,11 @@ public class ForceLayoutConfiguration {
 	 * @return
 	 */	
 	public double getMassConstant() {
-		return massConstant;
+		return getValue(MASS_CONSTANT);
 	}
 	
 	public void setMassConstant(double mass){
-		this.massConstant = mass;
+		setValue(MASS_CONSTANT, mass);		
 	}
 	
 	/**
@@ -44,11 +70,11 @@ public class ForceLayoutConfiguration {
 	 * @return
 	 */
 	public double getDamping() {				
-		return damping;
+		return getValue(DAMPING);
 	}
 	
 	public void setDamping(double damping){
-		this.damping = damping;
+		setValue(DAMPING, damping);
 	}
 	
 	/**
@@ -56,11 +82,11 @@ public class ForceLayoutConfiguration {
 	 * @return
 	 */
 	public double getCoulombRepulseStrength() {				
-		return repulse;
+		return getValue(REPULSE);
 	}
 	
 	public void setCoulombRepulseStrength(double str){
-		this.repulse = str;
+		setValue(REPULSE, str);
 	}
 
 	/**
@@ -70,11 +96,11 @@ public class ForceLayoutConfiguration {
 	 * @return the distance in standard measurement unit used by node.location()
 	 */
 	public int getCoulombForceMaxDistance() {	     
-    return repulseMaxDistance;
+    return getValue(REPULSE_MAX_DISTANT);
   }
 	
 	public void setCoulombForceMaxDistance(int max){
-		this.repulseMaxDistance = max;
+		setValue(REPULSE_MAX_DISTANT, max);
 	}
 
 	/**
@@ -83,22 +109,22 @@ public class ForceLayoutConfiguration {
 	 * @return true if thread needs to be paused.
 	 */	
 	public boolean isPause() {	      
-    return pause;
+    return getValue(PAUSE);
   }	
 	
 	public void setPause(boolean pause){
-		this.pause = pause;
+		setValue(PAUSE, pause);
 	}
 	
 	/**
 	 * @return how long is the sleeping period in pause cycle in milliseconds.
 	 */
 	public int getPauseReactionTime() {	      
-    return pauseReaction;
+    return getValue(PAUSE_REACTION);
   }	
 	
 	public void setPauseReactionTime(int pauseReaction){
-		this.pauseReaction = pauseReaction;
+		setValue(PAUSE_REACTION, pauseReaction);
 	}
 	/**
 	 * The force in the center every node gets pulled towards to.
@@ -106,11 +132,11 @@ public class ForceLayoutConfiguration {
 	 * @return
 	 */
 	public double getCenterForcePullStrength(){
-		return centerStrength;
+		return getValue(CENTER_STRENGTH);
 	}
 	
 	public void setCenterForcePullStrength(double str){
-		this.centerStrength = str;
+		setValue(CENTER_STRENGTH, str);
 	}
 	
 	/**
@@ -118,11 +144,11 @@ public class ForceLayoutConfiguration {
 	 * @return time in milliseconds
 	 */
 	public int getSleepTimeBetweenIterations(){
-		return sleepTime;
+		return getValue(SLEEP_TIME);
 	}
 	
 	public void setSleepTimeBetweenIterations(int sleepTime){
-		this.sleepTime = sleepTime;
+		setValue(SLEEP_TIME, sleepTime);
 	}
 	
 	/**
@@ -131,20 +157,21 @@ public class ForceLayoutConfiguration {
 	 * @return the edge margins in standard measurement units used by nodes.
 	 */
 	public int getEdgeMargins(){
-		return edgeMargins;
+		return getValue(EDGE_MARGINS);
 	}
 	
 	public void setEdgeMargins(int margins){
-		this.edgeMargins = margins;
+		setValue(EDGE_MARGINS, margins);
 	}
 
 	public boolean isRandomizeGraph() {
-  	return randomizeGraph;
+  	return getValue(RANDOMIZE_GRAPH);
   }
 
 	public void setRandomizeGraph(boolean randomizeGraph) {
-  	this.randomizeGraph = randomizeGraph;
+  	setValue(RANDOMIZE_GRAPH, randomizeGraph);
   }
 	
 	
 }
+
