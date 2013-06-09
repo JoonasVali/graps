@@ -20,6 +20,7 @@ import ee.joonasvali.graps.util.FlagManager;
 import ee.joonasvali.graps.util.GraphUtil;
 
 public class ForceLayout implements Layout {
+	protected final static double MAXFORCE = 800;
 	private LinkedList<PhysicalNode> nodes = new LinkedList<PhysicalNode>();
 	private LinkedList<UpdateListener> listeners = new LinkedList<UpdateListener>();	
 	private Executor executor = Executors.newSingleThreadExecutor();
@@ -250,7 +251,11 @@ class NodeTask implements Runnable{
 		Point edgePosOther = ClickableEdgeUtil.edgeFor(other, node.getNode());
 		double xdiff = (edgePosOther.x - edgePosNode.x);
 		double ydiff = (edgePosOther.y - edgePosNode.y);
-		return new Force(xdiff * strength, ydiff * strength);
+		return new Force(restrict( xdiff * strength), restrict( ydiff * strength));
+	}
+	
+	private double restrict(double value){
+		return Math.max(-ForceLayout.MAXFORCE, Math.min(ForceLayout.MAXFORCE, value));
 	}
 
 	private Force hookeAttraction(PhysicalNode node, PhysicalNode other) {
@@ -282,8 +287,8 @@ class NodeTask implements Runnable{
 		double massMultiplier = Math.max(node.getMass() * other.getMass()
 		    * configuration.getMassConstant(), 1);
 		double coulomb = configuration.getCoulombRepulseStrength();
-		return new Force((massMultiplier * coulomb * (xdiff / sqrdistance)),
-		    (massMultiplier * coulomb * (ydiff / sqrdistance)));
+		return new Force(restrict( massMultiplier * coulomb * (xdiff / sqrdistance)),
+				restrict( massMultiplier * coulomb * (ydiff / sqrdistance)));
 	}	
 }
 
