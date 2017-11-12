@@ -1,17 +1,20 @@
 package ee.joonasvali.graps.simulator;
 
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.util.Map;
-
 import ee.joonasvali.graps.graph.Clickable;
 import ee.joonasvali.graps.graph.Graph;
 import ee.joonasvali.graps.util.Area;
 
+import java.awt.*;
+import java.util.Map;
+
 public interface Renderer {
-	public void draw(Graph graph, Graphics2D g, Point mouse);
-	public Map<Clickable, Area> getMapping();
-	public void setSelected(Clickable clickable);
-	public void addListener(ChangeListener change);
-	public void removeListener(ChangeListener change);	
+  void draw(Graph graph, Graphics2D g, Point mouse);
+
+  Map<Clickable, Area> getMapping();
+
+  void setSelected(Clickable clickable);
+
+  void addListener(ChangeListener change);
+
+  void removeListener(ChangeListener change);
 }
