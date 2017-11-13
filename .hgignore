@@ -1,9 +1,0 @@
-syntax: regexp
-^.idea$
-^out$
-^target$
-^build$
-^dist$
-^tests$
-^.*iml$
-^.*orig$
