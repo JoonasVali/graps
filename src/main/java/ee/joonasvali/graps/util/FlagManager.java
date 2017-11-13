@@ -6,14 +6,14 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 public class FlagManager<T> {
-  private static Map<Class<?>, FlagManager<?>> instances = new IdentityHashMap<Class<?>, FlagManager<?>>();
-  private Map<T, Flags> flags = new WeakHashMap<T, Flags>();
+  private static Map<Class<?>, FlagManager<?>> instances = new IdentityHashMap<>();
+  private Map<T, Flags> flags = new WeakHashMap<>();
 
   @SuppressWarnings("unchecked")
   public static <T> FlagManager<T> getInstance(Class<T> clazz) {
     FlagManager<T> manager = (FlagManager<T>) instances.get(clazz);
     if (manager == null) {
-      manager = new FlagManager<T>();
+      manager = new FlagManager<>();
       instances.put(clazz, manager);
     }
     return manager;
@@ -37,7 +37,7 @@ public class FlagManager<T> {
   }
 
   private class Flags {
-    public Map<String, Boolean> flags = new HashMap<String, Boolean>();
+    public Map<String, Boolean> flags = new HashMap<>();
 
     public void set(String key, boolean up) {
       flags.put(key, up);

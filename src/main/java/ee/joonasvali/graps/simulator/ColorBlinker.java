@@ -23,16 +23,14 @@ public class ColorBlinker {
   }
 
   private Runnable getRunnable() {
-    return new Runnable() {
-      public void run() {
-        while (true) {
-          try {
-            TimeUnit.MILLISECONDS.sleep(speed);
-          } catch (InterruptedException e) {
-            e.printStackTrace();
-          }
-          selected = (selected + 1) % colors.length;
+    return () -> {
+      while (true) {
+        try {
+          TimeUnit.MILLISECONDS.sleep(speed);
+        } catch (InterruptedException e) {
+          e.printStackTrace();
         }
+        selected = (selected + 1) % colors.length;
       }
     };
   }

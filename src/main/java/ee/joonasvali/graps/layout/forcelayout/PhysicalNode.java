@@ -35,7 +35,7 @@ public class PhysicalNode implements Clickable {
   public Collection<Node> getForeignNodes() {
     if (foreignNodes.isEmpty())
       return Collections.emptyList();
-    return new ArrayList<Node>(foreignNodes);
+    return new ArrayList<>(foreignNodes);
   }
 
   private Collection<Node> createForeignNodes() {

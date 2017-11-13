@@ -58,27 +58,25 @@ public class SimulatorMouseListener implements MouseListener {
   }
 
   private Runnable makeRunnable(final Point prevClick) {
-    return new Runnable() {
-      public void run() {
-        try {
-          while (drag != null) {
-            Point mouse = MouseInfo.getPointerInfo().getLocation();
-            SwingUtilities.convertPointFromScreen(mouse, canvas);
-            int xDiff = mouse.x - prevClick.x;
-            int yDiff = mouse.y - prevClick.y;
-            prevClick.setLocation(mouse);
-            Point location = drag.getLocation();
-            location.x += xDiff;
-            location.y += yDiff;
-            drag.setLocation(location);
-            try {
-              TimeUnit.MILLISECONDS.sleep(10);
-            } catch (InterruptedException e) {
-              e.printStackTrace();
-            }
+    return () -> {
+      try {
+        while (drag != null) {
+          Point mouse = MouseInfo.getPointerInfo().getLocation();
+          SwingUtilities.convertPointFromScreen(mouse, canvas);
+          int xDiff = mouse.x - prevClick.x;
+          int yDiff = mouse.y - prevClick.y;
+          prevClick.setLocation(mouse);
+          Point location = drag.getLocation();
+          location.x += xDiff;
+          location.y += yDiff;
+          drag.setLocation(location);
+          try {
+            TimeUnit.MILLISECONDS.sleep(10);
+          } catch (InterruptedException e) {
+            e.printStackTrace();
           }
-        } catch (NullPointerException e) {
         }
+      } catch (NullPointerException e) {
       }
     };
   }

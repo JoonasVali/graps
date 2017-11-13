@@ -1,11 +1,11 @@
 package ee.joonasvali.graps.edges;
 
-import java.awt.Point;
+import ee.joonasvali.graps.graph.Port;
+
+import java.awt.*;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-
-import ee.joonasvali.graps.graph.Port;
 
 public class TurtlePathCalculator extends PathCalculator{
 
@@ -15,11 +15,7 @@ public class TurtlePathCalculator extends PathCalculator{
 	public static PathCalculatorFactory factory;
 	public synchronized static PathCalculatorFactory getFactory(){
 		if(factory == null){
-			factory = new PathCalculatorFactory(){
-				public PathCalculator getPathCalculator(Port port, CollisionMap map, Point start, Point end, int margin) {
-	        return new TurtlePathCalculator(port, map, start, end, margin);
-        }
-			};
+			factory = TurtlePathCalculator::new;
 		}
 		return factory;
 	}

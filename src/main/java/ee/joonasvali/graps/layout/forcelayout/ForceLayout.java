@@ -9,21 +9,19 @@ import ee.joonasvali.graps.util.FlagManager;
 import ee.joonasvali.graps.util.GraphUtil;
 
 import java.awt.*;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
+import java.util.List;
 import java.util.concurrent.*;
 
 public class ForceLayout implements Layout {
   protected final static double MAXFORCE = 800;
-  private LinkedList<PhysicalNode> nodes = new LinkedList<PhysicalNode>();
-  private LinkedList<UpdateListener> listeners = new LinkedList<UpdateListener>();
+  private List<PhysicalNode> nodes = new ArrayList<>();
+  private List<UpdateListener> listeners = new ArrayList<>();
   private Executor executor = Executors.newSingleThreadExecutor();
   private boolean run;
   private Point offset = new Point(0, 0);
   private ForceLayoutConfiguration configuration;
-  private final LinkedList<Runnable> todo = new LinkedList<Runnable>();
+  private final LinkedList<Runnable> todo = new LinkedList<>();
   private ExecutorService workers = Executors.newCachedThreadPool();
 
   public ForceLayout() {
@@ -49,16 +47,12 @@ public class ForceLayout implements Layout {
       nodes.add(new PhysicalNode(n));
     }
 
-    executor.execute(new Runnable() {
-      public void run() {
-        place();
-      }
-    });
+    executor.execute(this::place);
   }
 
   private void place() {
-    LinkedList<PhysicalNode> validNodes = new LinkedList<PhysicalNode>();
-    Map<PhysicalNode, NodeTask> runnables = new HashMap<PhysicalNode, NodeTask>();
+    ArrayList<PhysicalNode> validNodes = new ArrayList<>();
+    Map<PhysicalNode, NodeTask> runnables = new HashMap<>();
     CentralNode center = new CentralNode();
 
     double volatility = 0;
@@ -151,7 +145,7 @@ public class ForceLayout implements Layout {
         .getLocation().y + node.getVelocity().y + offset.y)));
   }
 
-  private void placeRandomly(LinkedList<PhysicalNode> validNodes) {
+  private void placeRandomly(List<PhysicalNode> validNodes) {
     int x, y;
     x = y = validNodes.size() * 20;
     for (PhysicalNode node : validNodes) {

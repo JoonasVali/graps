@@ -39,7 +39,7 @@ public class ClickableEdgeUtil {
       return other;
     }
 
-    int x = node.getCenter().x, y = node.getCenter().y;
+    int x, y;
     double angle = angle(x1, x2, y1, y2);
     double alphaAngle = angle(node.getLocation().x, node.getCenter().x, node.getLocation().y, node.getCenter().y);
     double betaAngle = 90 - alphaAngle;

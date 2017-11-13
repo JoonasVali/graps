@@ -85,12 +85,10 @@ public class Simulator {
 
   public static void main(String[] args) {
     try {
-      SwingUtilities.invokeAndWait(new Runnable() {
-        public void run() {
-          Generator gen = new Generator(NODES, PORTS, 100 /* Obsolete MAX pos */);
-          Graph graph = gen.generate();
-          new Simulator(graph, true);
-        }
+      SwingUtilities.invokeAndWait(() -> {
+        Generator gen = new Generator(NODES, PORTS, 100 /* Obsolete MAX pos */);
+        Graph graph = gen.generate();
+        new Simulator(graph, true);
       });
     } catch (InvocationTargetException e) {
       // TODO Auto-generated catch block
@@ -102,11 +100,7 @@ public class Simulator {
   }
 
   private ChangeListener getRepaintListener(final Canvas canvas) {
-    return new ChangeListener() {
-      public void onChange(Object src) {
-        canvas.repaint();
-      }
-    };
+    return src -> canvas.repaint();
   }
 
   private MouseListener getMouseListener(Renderer renderer, Canvas canvas) {

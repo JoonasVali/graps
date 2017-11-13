@@ -21,7 +21,7 @@ public class BreakpointManager {
   }
 
   public void makeBreakPoints() {
-    Set<Port> processed = new HashSet<Port>();
+    Set<Port> processed = new HashSet<>();
     for (Node node : graph.getNodes()) {
       for (Port p : node.getPorts()) {
         if (processed.add(p)) {

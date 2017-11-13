@@ -11,11 +11,7 @@ public class CornerPathCalculator extends PathCalculator {
 
   public synchronized static PathCalculatorFactory getFactory() {
     if (factory == null) {
-      factory = new PathCalculatorFactory() {
-        public PathCalculator getPathCalculator(Port port, CollisionMap map, Point start, Point end, int margin) {
-          return new CornerPathCalculator(port, map, start, end, margin);
-        }
-      };
+      factory = CornerPathCalculator::new;
     }
     return factory;
   }

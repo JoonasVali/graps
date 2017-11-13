@@ -6,7 +6,7 @@ import ee.joonasvali.graps.graph.Port;
 import ee.joonasvali.graps.util.GraphUtil;
 
 import java.awt.*;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Generator {
@@ -25,8 +25,8 @@ public class Generator {
     return new Graph(generateNodes());
   }
 
-  private LinkedList<Node> generateNodes() {
-    LinkedList<Node> res = new LinkedList<Node>();
+  private List<Node> generateNodes() {
+    ArrayList<Node> res = new ArrayList<>(nodes);
     for (int i = 0; i < nodes; i++) {
       int nodesizeX = (int) (Math.random() * NODE_SIZE) + NODE_SIZE;
       int nodesizeY = (int) (Math.random() * NODE_SIZE) + NODE_SIZE;
@@ -37,7 +37,7 @@ public class Generator {
         p.setNode(node);
       }
     }
-    LinkedList<Port> ports = generatePorts();
+    List<Port> ports = generatePorts();
     for (Port p : ports) {
       Node n = getRandom(res);
       n.addPort(p);
@@ -47,8 +47,8 @@ public class Generator {
     return res;
   }
 
-  private LinkedList<Port> generatePorts() {
-    LinkedList<Port> res = new LinkedList<Port>();
+  private List<Port> generatePorts() {
+    List<Port> res = new ArrayList<>();
     for (int i = 0; i < ports; i += 2) {
       Pair p = new Pair();
       res.add(p.portA);

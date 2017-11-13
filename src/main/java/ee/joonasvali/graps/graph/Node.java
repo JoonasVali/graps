@@ -1,8 +1,8 @@
 package ee.joonasvali.graps.graph;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 public class Node implements Clickable {
@@ -11,12 +11,12 @@ public class Node implements Clickable {
   private Point size;
 
   public Node(Point location, Point size) {
-    ports = new LinkedList<Port>();
+    ports = new ArrayList<>();
     this.location = location;
     this.size = size;
   }
 
-  public Node(LinkedList<Port> ports) {
+  public Node(List<Port> ports) {
     this.ports = Collections.unmodifiableList(ports);
   }
 
@@ -36,8 +36,8 @@ public class Node implements Clickable {
     return size.y;
   }
 
-  public LinkedList<Port> getOpenPorts() {
-    LinkedList<Port> res = new LinkedList<Port>();
+  public List<Port> getOpenPorts() {
+    List<Port> res = new ArrayList<>();
     for (Port p : ports) {
       if (!p.isOccupied()) {
         res.add(p);
